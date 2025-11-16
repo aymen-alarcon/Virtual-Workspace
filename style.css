@@ -4,3 +4,8 @@
     background-size:cover;
     object-fit:cover;
 }
+
+.profile-photo{
+    height: 9em;
+    width: 9em;
+}
