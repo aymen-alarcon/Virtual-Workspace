@@ -9,3 +9,7 @@
     height: 9em;
     width: 9em;
 }
+
+.profile-info{
+    cursor: pointer;
+}

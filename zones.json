@@ -1,0 +1,27 @@
+[
+    { 
+        "name": "Conference Room", 
+        "capacity": 6
+    },
+
+    { 
+        "name": "Reception", 
+        "capacity": 2
+    },
+
+    { 
+        "name": "Server Room", 
+        "capacity": 2
+    },
+
+    { 
+        "name": "Security Room", 
+        "capacity": 2
+    },
+
+    { 
+        "name": "Staff Room", 
+        "capacity": 4
+    }
+
+]
