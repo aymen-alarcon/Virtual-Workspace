@@ -1,27 +1,32 @@
 [
     { 
+        "id" : 0,
         "name": "Conference Room", 
-        "capacity": 6
+        "capacity": 4
     },
-
+    
     { 
-        "name": "Reception", 
-        "capacity": 2
-    },
-
-    { 
-        "name": "Server Room", 
-        "capacity": 2
-    },
-
-    { 
+        "id" : 3,
         "name": "Security Room", 
-        "capacity": 2
+        "capacity": 4
     },
 
     { 
+        "id" : 1,
+        "name": "Reception", 
+        "capacity": 4
+    },
+
+    { 
+        "id" : 2,
+        "name": "Server Room", 
+        "capacity": 4
+    },
+
+
+    { 
+        "id" : 4,
         "name": "Staff Room", 
         "capacity": 4
     }
-
 ]
