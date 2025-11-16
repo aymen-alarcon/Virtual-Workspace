@@ -188,7 +188,7 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
     let form = event.target;
 
 
-    let arr = {
+    let newWorker = {
         WorkerName : document.getElementById("workerName").value,
         workerRole : document.getElementById("workerRole").value,
         workerEmail : document.getElementById("workerEmail").value,
@@ -197,23 +197,70 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
     }
 
     if (form.workerExperience.length === undefined) {
-        arr.workerExperience.push(form.workerExperience.value);
+        newWorker.workerExperience.push(form.workerExperience.value);
     } else {
         for (let i = 0; i < form.workerExperience.length; i++) {
-            arr.workerExperience.push(form.workerExperience[i].value);
+            newWorker.workerExperience.push(form.workerExperience[i].value);
         }
     }
 
-    saveToLocalStorage("employee", arr)
+    saveToLocalStorage("employee", newWorker)
+    AddNewEmployee(newWorker)
 })
+
+function getEmployeesAddedToLocalStorage(employeeInformation) {
+    let oldData = localStorage.getItem(employeeInformation)
+    
+    if (oldData == null || oldData == undefined) {
+        return null
+    }
+
+    return JSON.parse(oldData);
+}
+
+function AddNewEmployee(employee) {
+    document.querySelector(".unassigned-employees").innerHTML += `
+        <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
+            <div class="d-flex align-items-center gap-3 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
+                <div class="rounded-circle" style="background-image:url('assets/img/profile.png');"></div>
+                <div>
+                    <p class="mb-0">${employee.WorkerName}</p>
+                    <small class="text-muted-light">${employee.workerRole}</small>
+                </div>
+            </div>
+        </div>
+    `
+}
 
 document.getElementById("addExperienceBtn").addEventListener("click", ()=>{
     document.querySelector(".experience-zone").innerHTML +=`
         <label for="workerExperience" class="form-label">Experience</label>
-        <input type="text" class="form-control workerExperience" name="workerExperience" placeholder="Kwayri">
+        <input type="text" class="form-control workerExperience" name="workerExperience" placeholder="Experience #1">
     `
 })
 
 function saveToLocalStorage(keyName, dataList) {
-    localStorage.setItem(keyName, JSON.stringify(dataList));
+    let existingEmployees = getEmployeesAddedToLocalStorage(keyName);
+    existingEmployees.push(dataList)
+    localStorage.setItem(keyName, JSON.stringify(existingEmployees));
+}
+
+document.querySelectorAll("#editWorkerModalButton").forEach(element => {
+    element.addEventListener("click", event => {
+        loadDataToModalEdit(event.target.getAttribute("id"));
+    })
+})
+
+function loadDataToModalEdit(id) {
+    let employeeList = getEmployeesAddedToLocalStorage("employee");
+
+    let employeeToEdit = employeeList.find(employeeTemp => employeeTemp.id == id);
+
+    let form = document.forms["editWorkerModal"];
+
+    form.name.value = employeeToEdit.firstname;
+    form.role.value = employeeToEdit.role;
+    form.email.value = employeeToEdit.email;
+    form.phone.value = employeeToEdit.phone;
+    form.experiences.value = employeeToEdit.experiences;
 }
