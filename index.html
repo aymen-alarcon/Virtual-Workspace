@@ -215,51 +215,8 @@
 
       <div class="mb-3"><button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#addWorkerModal">+ Add New Staff</button></div>
 
-      <div class="flex-column overflow-auto">
+      <div class="unassigned-employees flex-column overflow-auto">
         <h6 class="text-muted-light mb-2">UNASSIGNED STAFF</h6>
-        <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
-          <div class="d-flex align-items-center gap-3 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
-            <div class="rounded-circle" style="background-image:url('assets/img/profile.png');"></div>
-            <div>
-              <p class="mb-0">Eleanor Pena</p>
-              <small class="text-muted-light">Engineer</small>
-            </div>
-          </div>
-          <button class="btn btn-link text-danger p-1"><i class="bi bi-x-lg"></i></button>
-        </div>
-
-        <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
-          <div class="d-flex align-items-center gap-3 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
-            <div class="rounded-circle" style="background-image:url('assets/img/profile.png');"></div>
-            <div>
-              <p class="mb-0">Cameron Williamson</p>
-              <small class="text-muted-light">Security</small>
-            </div>
-          </div>
-          <button class="btn btn-link text-danger p-1"><i class="bi bi-x-lg"></i></button>
-        </div>
-
-        <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
-          <div class="d-flex align-items-center gap-3 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
-            <div class="rounded-circle" style="background-image:url('assets/img/profile.png');"></div>
-            <div>
-              <p class="mb-0">Jane Cooper</p>
-              <small class="text-muted-light">Designer</small>
-            </div>
-          </div>
-          <button class="btn btn-link text-danger p-1"><i class="bi bi-x-lg"></i></button>
-        </div>
-
-        <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
-          <div class="d-flex align-items-center gap-3 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
-            <div class="rounded-circle" style="background-image:url('assets/img/profile.png');"></div>
-            <div>
-              <p class="mb-0">Cody Fisher</p>
-              <small class="text-muted-light">Marketing</small>
-            </div>
-          </div>
-          <button class="btn btn-link text-danger p-1"><i class="bi bi-x-lg"></i></button>
-        </div>
       </div>
     </aside>
     <main class="flex-fill overflow-auto p-4">
@@ -272,15 +229,7 @@
                 <h5 class="card-title mb-0">Conference Room</h5>
                 <button class="btn btn-link text-dark text-decoration-none p-0"><i class="bi bi-plus-circle"></i>Assign</button>
               </div>
-              <div class="flex-fill">
-                <div class="d-flex align-items-center bg-light-custom p-2 rounded mb-2">
-                    <img src="assets/img/profile.png" class="rounded-circle me-2">
-                    <div>
-                        <p class="mb-0 small">Kristin Watson</p>
-                        <small class="text-muted-light">Manager</small>
-                    </div>
-                    <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
-                </div>
+              <div class="flex-fill conference-room-employees">
               </div>
             </div>
           </div>
@@ -292,7 +241,7 @@
                   <h5 class="card-title mb-0">Reception</h5>
                   <button class="btn btn-link text-dark text-decoration-none p-0"><i class="bi bi-plus-circle"></i> Assign</button>
               </div>
-              <div class="flex-fill d-flex flex-column justify-content-center align-items-center text-muted-light">
+              <div class="flex-fill reception-room-employees d-flex flex-column justify-content-center align-items-center text-muted-light">
                   <i class="bi bi-person-plus"></i>
                   <p class="mb-0 small">No one assigned</p>
               </div>
@@ -306,15 +255,7 @@
                       <h5 class="card-title mb-0">Server Room</h5>
                       <button class="btn btn-link text-dark text-decoration-none p-0"><i class="bi bi-plus-circle"></i> Assign</button>
                   </div>
-                  <div class="flex-fill">
-                      <div class="d-flex align-items-center bg-light-custom p-2 rounded mb-2">
-                          <img src="assets/img/profile.png" class="rounded-circle me-2">
-                          <div>
-                              <p class="mb-0 small">Arlene McCoy</p>
-                              <small class="text-muted-light">IT Specialist</small>
-                          </div>
-                          <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
-                      </div>
+                  <div class="flex-fill server-room-employees">
                   </div>
               </div>
           </div>
@@ -327,15 +268,7 @@
                         <h5 class="card-title mb-0">Security Room</h5>
                         <button class="btn btn-link text-dark text-decoration-none p-0"><i class="bi bi-plus-circle"></i> Assign</button>
                     </div>
-                    <div class="flex-fill">
-                        <div class="d-flex align-items-center bg-light-custom p-2 rounded mb-2">
-                            <img src="assets/img/profile.png" class="rounded-circle me-2">
-                            <div>
-                                <p class="mb-0 small">Ralph Edwards</p>
-                                <small class="text-muted-light">Security</small>
-                            </div>
-                            <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
-                        </div>
+                    <div class="flex-fill security-room-employees">
                     </div>
                 </div>
             </div>
@@ -347,7 +280,7 @@
                     <h5 class="card-title mb-0">Staff Room</h5>
                     <button class="btn btn-link text-dark text-decoration-none p-0"><i class="bi bi-plus-circle"></i> Assign</button>
                 </div>
-                <div class="flex-fill d-flex flex-column justify-content-center align-items-center text-muted-light">
+                <div class="flex-fill staff-room-employees d-flex flex-column justify-content-center align-items-center text-muted-light">
                     <i class="bi bi-person-plus"></i>
                     <p class="mb-0 small">No one assigned</p>
                 </div>
