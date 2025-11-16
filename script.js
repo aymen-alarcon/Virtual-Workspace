@@ -43,11 +43,6 @@ function displayRoom(room) {
         `
 }
 
-// <div class="flex-fill staff-room-employees d-flex flex-column justify-content-center align-items-center text-muted-light">
-//     <i class="bi bi-person-plus"></i>
-//     <p class="mb-0 small">No one assigned</p>
-// </div>
-
 function displayUnassignedEmployees(employee) {
     // if (employeeCount != 0) {        
         return `
@@ -94,6 +89,7 @@ function displayConferenceRoomEmployees(employee) {
     //     `
     // }
 }
+
 function displayServerRoomEmployees(employee) {
     // if (employeeCount != 0) {        
         return `
@@ -116,6 +112,7 @@ function displayServerRoomEmployees(employee) {
     //     `
     // }
 }
+
 function displayReceptionRoomEmployees(employee) {
     // if (employeeCount != 0) {        
         return `
@@ -138,6 +135,7 @@ function displayReceptionRoomEmployees(employee) {
     //     `
     // }
 }
+
 function displayStaffRoomEmployees(employee) {
     // if (employeeCount != 0) {        
         return `
@@ -160,6 +158,7 @@ function displayStaffRoomEmployees(employee) {
     //     `
     // }
 }
+
 function displaySecurityRoomEmployees(employee) {
     // if (employeeCount != 0) {        
         return `
@@ -181,4 +180,40 @@ function displaySecurityRoomEmployees(employee) {
 
     //     `
     // }
+}
+
+document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
+    event.preventDefault();
+    
+    let form = event.target;
+
+
+    let arr = {
+        WorkerName : document.getElementById("workerName").value,
+        workerRole : document.getElementById("workerRole").value,
+        workerEmail : document.getElementById("workerEmail").value,
+        workerPhone : document.getElementById("workerPhone").value,
+        workerExperience : []
+    }
+
+    if (form.workerExperience.length === undefined) {
+        arr.workerExperience.push(form.workerExperience.value);
+    } else {
+        for (let i = 0; i < form.workerExperience.length; i++) {
+            arr.workerExperience.push(form.workerExperience[i].value);
+        }
+    }
+
+    saveToLocalStorage("employee", arr)
+})
+
+document.getElementById("addExperienceBtn").addEventListener("click", ()=>{
+    document.querySelector(".experience-zone").innerHTML +=`
+        <label for="workerExperience" class="form-label">Experience</label>
+        <input type="text" class="form-control workerExperience" name="workerExperience" placeholder="Kwayri">
+    `
+})
+
+function saveToLocalStorage(keyName, dataList) {
+    localStorage.setItem(keyName, JSON.stringify(dataList));
 }
