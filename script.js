@@ -103,10 +103,7 @@ document.querySelector('.save_changes').addEventListener("click", ()=>{
     document.querySelectorAll(".checkbox").forEach(employeeCheckBox =>{
         if (employeeCheckBox.checked === true) {
             let nameOfEmployee = employeeCheckBox.getAttribute("name")
-            console.log(nameOfEmployee)
-
             let nameOfRoom = currentRoomName;
-            console.log(nameOfRoom);
 
             let employeesList = getEmployeesAddedToLocalStorage("employee")
             let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
