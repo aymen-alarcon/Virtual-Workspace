@@ -2,27 +2,24 @@ fetch("zones.json")
 .then((res) => res.json())
 .then((roomData) => roomData.forEach(room => {document.querySelector(".row").innerHTML += displayRoom(room)}))
 
-fetch("employees.json")
-.then((response) => response.json())
-.then((data) => data.forEach(employee => {
-        EmployeeSaved(employee)
-        if (employee.location == null) {        
-            document.querySelector(".unassigned-employees").innerHTML += displayUnassignedEmployees(employee)
-        }else if(employee.location == "Conference Room"){     
-            document.querySelector(".room-0").innerHTML += displayConferenceRoomEmployees(employee)
-        }else if(employee.location == "Security Room"){        
-            document.querySelector(".room-3").innerHTML += displaySecurityRoomEmployees(employee)
-        }else if(employee.location == "Server Room"){        
-            document.querySelector(".room-2").innerHTML += displayServerRoomEmployees(employee)
-        }else if(employee.location == "Reception Room"){        
-            document.querySelector(".room-1").innerHTML += displayReceptionRoomEmployees(employee)
-        }else if(employee.location == "Staff Room"){        
-            document.querySelector(".room-4").innerHTML += displayStaffRoomEmployees(employee)
-        }else if(employee.location == "Spare Room"){        
-            document.querySelector(".room-5").innerHTML += displaySpareRoomEmployees(employee)
-        }
-    })
-)
+let employees = getEmployeesAddedToLocalStorage("employee") || [];
+employees.forEach(employee => {
+    if (!employee.location) {        
+        document.querySelector(".unassigned-employees").innerHTML += displayUnassignedEmployees(employee);
+    } else if(employee.location === "Conference Room"){     
+        document.querySelector(".room-0").innerHTML += displayConferenceRoomEmployees(employee);
+    } else if(employee.location === "Security Room"){        
+        document.querySelector(".room-3").innerHTML += displaySecurityRoomEmployees(employee);
+    } else if(employee.location === "Server Room"){        
+        document.querySelector(".room-2").innerHTML += displayServerRoomEmployees(employee);
+    } else if(employee.location === "Reception Room"){        
+        document.querySelector(".room-1").innerHTML += displayReceptionRoomEmployees(employee);
+    } else if(employee.location === "Staff Room"){        
+        document.querySelector(".room-4").innerHTML += displayStaffRoomEmployees(employee);
+    } else if(employee.location === "Spare Room"){        
+        document.querySelector(".room-5").innerHTML += displaySpareRoomEmployees(employee);
+    }
+});
 
 function EmployeeSaved(employee) {
     let data = getEmployeesAddedToLocalStorage("employee");
@@ -66,7 +63,7 @@ function CheckAssignedEmployees(roomName){
     let assignedEmployees = getEmployeesAddedToLocalStorage("employee")
 
     let assignedEmployeesList = assignedEmployees.filter(employee => employee.location === roomName)
-    let UnassignedEmployeesList = assignedEmployees.filter(employee => employee.location !== roomName)
+    let UnassignedEmployeesList = assignedEmployees.filter(employee => employee.location === null)
     
     document.querySelector(".edit_assigned_staff").innerHTML = "";
     
@@ -108,6 +105,13 @@ document.querySelector('.save_changes').addEventListener("click", ()=>{
             let employeesList = getEmployeesAddedToLocalStorage("employee")
             let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
             employeeToChange.location = nameOfRoom
+            localStorage.setItem("employee", JSON.stringify(employeesList));
+        }else{
+            let nameOfEmployee = employeeCheckBox.getAttribute("name")
+
+            let employeesList = getEmployeesAddedToLocalStorage("employee")
+            let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
+            employeeToChange.location = null
             localStorage.setItem("employee", JSON.stringify(employeesList));
         }
     })
@@ -238,6 +242,7 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
 
     saveToLocalStorage("employee", arr)
     AddNewEmployee(arr)
+    form.reset();
 })
 
 function getEmployeesAddedToLocalStorage(employeeInformation) {
@@ -250,8 +255,8 @@ function AddNewEmployee(employee) {
             <div class="d-flex align-items-center gap-3 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <div class="rounded-circle" style="background-image:url('assets/img/profile.png');"></div>
                 <div>
-                    <p class="mb-0">${employee.WorkerName}</p>
-                    <small class="text-muted-light">${employee.workerRole}</small>
+                    <p class="mb-0">${employee.name}</p>
+                    <small class="text-muted-light">${employee.role}</small>
                 </div>
             </div>
         </div>
