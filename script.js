@@ -5,12 +5,10 @@ fetch("zones.json")
     }
 ))
 
-// let zone = document.querySelector(`.room-${room.id}`) 
-// let employeeCount = zone.querySelectorAll(".profile-info").length;
-
 fetch("employees.json")
 .then((response) => response.json())
 .then((data) => data.forEach(employee => {
+        EmployeeSaved(employee)
         if (employee.location == null) {        
             document.querySelector(".unassigned-employees").innerHTML += displayUnassignedEmployees(employee)
         }else if(employee.location == "Conference Room"){     
@@ -23,9 +21,51 @@ fetch("employees.json")
             document.querySelector(".room-3").innerHTML += displayReceptionRoomEmployees(employee)
         }else if(employee.location == "Staff Room"){        
             document.querySelector(".room-4").innerHTML += displayStaffRoomEmployees(employee)
+        }else if(employee.location == "Spare Room"){        
+            document.querySelector(".room-5").innerHTML += displaySpareRoomEmployees(employee);
         }
     })
 )
+
+function EmployeeSaved(employee) {
+    let data = getEmployeesAddedToLocalStorage("employee");
+    
+    if (data.length === 0) {
+        saveToLocalStorage("employee", employee);
+        return;
+    }
+    
+    let employeeExist = data.some(emp => emp.name === employee.name);
+    
+    if (!employeeExist) {
+        saveToLocalStorage("employee", employee);
+    }
+}
+
+function loadEmployeesFromLocalStorage() {
+    let savedEmployees = getEmployeesAddedToLocalStorage("employee");
+    if (savedEmployees && savedEmployees.length > 0) {
+        savedEmployees.forEach(employee => {
+            if (employee.location == null) {        
+                document.querySelector(".unassigned-employees").innerHTML += displayUnassignedEmployees(employee);
+            } else if(employee.location == "Conference Room"){     
+                document.querySelector(".room-0").innerHTML += displayConferenceRoomEmployees(employee);
+            } else if(employee.location == "Security Room"){        
+                document.querySelector(".room-1").innerHTML += displaySecurityRoomEmployees(employee);
+            } else if(employee.location == "Server Room"){        
+                document.querySelector(".room-2").innerHTML += displayServerRoomEmployees(employee);
+            } else if(employee.location == "Reception Room"){        
+                document.querySelector(".room-3").innerHTML += displayReceptionRoomEmployees(employee);
+            } else if(employee.location == "Staff Room"){        
+                document.querySelector(".room-4").innerHTML += displayStaffRoomEmployees(employee);
+            }else if(employee.location == "Spare Room"){        
+                document.querySelector(".room-5").innerHTML += displaySpareRoomEmployees(employee);
+            }
+        });
+    }
+}
+
+loadEmployeesFromLocalStorage();
 
 function displayRoom(room) {
         return `
@@ -34,7 +74,7 @@ function displayRoom(room) {
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title text-white mb-0">${room.name}</h5>
-                            <button class="btn btn-link text-white text-decoration-none p-0"><i class="bi bi-plus-circle"></i>Assign</button>
+                            <button class="btn btn-link text-white text-decoration-none p-0 addAssignee" roomName="${room.name}" data-bs-toggle="modal" data-bs-target="#assignWorker"><i class="bi bi-plus-circle"></i>Assign</button>
                         </div>
                         <div class="flex-fill room-${room.id}"></div>
                     </div>
@@ -43,8 +83,30 @@ function displayRoom(room) {
         `
 }
 
+document.addEventListener("click", (event) => {
+    if (event.target.classList.contains("addAssignee")) {
+        CheckAssignedEmployees(event.target.getAttribute("roomName"));
+    }
+});
+
+function CheckAssignedEmployees(roomName){    
+    let assignedEmployees = getEmployeesAddedToLocalStorage("employee")
+
+    let assignedEmployee = assignedEmployees.filter(assignedEmployeeId => assignedEmployeeId.location === roomName)
+    console.log(assignedEmployee)
+
+    if (assignedEmployee && assignedEmployee.location === roomName) {
+        document.querySelector(".assignedEmployeesCheckbox").setAttribute("checked", "true");
+    }
+
+    document.querySelector(".edit_assigned_staff").innerHTML += `    
+        <div class="d-flex gap-5 g-5 assignedEmployeesCheckbox">
+            <input type="checkbox" name="${assignedEmployees.name}">${assignedEmployees.name}
+        </div>
+    `;
+}
+
 function displayUnassignedEmployees(employee) {
-    // if (employeeCount != 0) {        
         return `
             <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
                 <div class="d-flex align-items-center gap-3 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
@@ -56,19 +118,9 @@ function displayUnassignedEmployees(employee) {
                 </div>
             </div>
         `
-    // }else{
-    //     return `
-    //             <div class="flex-fill staff-room-employees d-flex flex-column justify-content-center align-items-center text-muted-light">
-    //                 <i class="bi bi-person-plus"></i>
-    //                 <p class="mb-0 small">No one assigned</p>
-    //             </div>
-
-    //     `
-    // }
 }
 
 function displayConferenceRoomEmployees(employee) {
-    // if (employeeCount != 0) {        
         return `
             <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <img src="${employee.photo}" class="rounded-circle me-2">
@@ -79,19 +131,9 @@ function displayConferenceRoomEmployees(employee) {
                 <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
             </div>           
         `
-    // }else{
-    //     return `
-    //             <div class="flex-fill staff-room-employees d-flex flex-column justify-content-center align-items-center text-muted-light">
-    //                 <i class="bi bi-person-plus"></i>
-    //                 <p class="mb-0 small">No one assigned</p>
-    //             </div>
-
-    //     `
-    // }
 }
 
 function displayServerRoomEmployees(employee) {
-    // if (employeeCount != 0) {        
         return `
             <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <img src="${employee.photo}" class="rounded-circle me-2">
@@ -102,19 +144,9 @@ function displayServerRoomEmployees(employee) {
                 <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
             </div>           
         `
-    // }else{
-    //     return `
-    //             <div class="flex-fill staff-room-employees d-flex flex-column justify-content-center align-items-center text-muted-light">
-    //                 <i class="bi bi-person-plus"></i>
-    //                 <p class="mb-0 small">No one assigned</p>
-    //             </div>
-
-    //     `
-    // }
 }
 
 function displayReceptionRoomEmployees(employee) {
-    // if (employeeCount != 0) {        
         return `
             <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <img src="${employee.photo}" class="rounded-circle me-2">
@@ -125,19 +157,9 @@ function displayReceptionRoomEmployees(employee) {
                 <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
             </div>           
         `
-    // }else{
-    //     return `
-    //             <div class="flex-fill staff-room-employees d-flex flex-column justify-content-center align-items-center text-muted-light">
-    //                 <i class="bi bi-person-plus"></i>
-    //                 <p class="mb-0 small">No one assigned</p>
-    //             </div>
-
-    //     `
-    // }
 }
 
 function displayStaffRoomEmployees(employee) {
-    // if (employeeCount != 0) {        
         return `
             <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <img src="${employee.photo}" class="rounded-circle me-2">
@@ -148,19 +170,9 @@ function displayStaffRoomEmployees(employee) {
                 <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
             </div>           
         `
-    // }else{
-    //     return `
-    //             <div class="flex-fill staff-room-employees d-flex flex-column justify-content-center align-items-center text-muted-light">
-    //                 <i class="bi bi-person-plus"></i>
-    //                 <p class="mb-0 small">No one assigned</p>
-    //             </div>
-
-    //     `
-    // }
 }
 
 function displaySecurityRoomEmployees(employee) {
-    // if (employeeCount != 0) {        
         return `
             <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <img src="${employee.photo}" class="rounded-circle me-2">
@@ -171,15 +183,19 @@ function displaySecurityRoomEmployees(employee) {
                 <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
             </div>           
         `
-    // }else{
-    //     return `
-    //             <div class="flex-fill staff-room-employees d-flex flex-column justify-content-center align-items-center text-muted-light">
-    //                 <i class="bi bi-person-plus"></i>
-    //                 <p class="mb-0 small">No one assigned</p>
-    //             </div>
+}
 
-    //     `
-    // }
+function displaySpareRoomEmployees(employee) {
+        return `
+            <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
+                <img src="${employee.photo}" class="rounded-circle me-2">
+                <div>
+                    <p class="mb-0 small">${employee.name}</p>
+                    <small class="text-muted-light">${employee.role}</small>
+                </div>
+                <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
+            </div>           
+        `
 }
 
 document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
@@ -188,10 +204,12 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
     let form = event.target;
 
     let arr = {
-        WorkerName : document.getElementById("workerName").value,
-        workerRole : document.getElementById("workerRole").value,
-        workerEmail : document.getElementById("workerEmail").value,
-        workerPhone : document.getElementById("workerPhone").value,
+        name : document.getElementById("workerName").value,
+        role : document.getElementById("workerRole").value,
+        email : document.getElementById("workerEmail").value,
+        phone : document.getElementById("workerPhone").value,
+        picture : "assets/img/profile.png",
+        location : null,
         workerExperience : []
     }   
     
@@ -216,7 +234,7 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
 })
 
 function getEmployeesAddedToLocalStorage(employeeInformation) {
-    return JSON.parse(localStorage.getItem(employeeInformation));
+    return JSON.parse(localStorage.getItem(employeeInformation)) || [];
 }
 
 function AddNewEmployee(employee) {
