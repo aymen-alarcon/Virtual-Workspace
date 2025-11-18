@@ -2,37 +2,43 @@
     { 
         "id" : 0,
         "name": "Conference Room", 
-        "capacity": 4
+        "capacity": 4,
+        "picture": "assets/img/room-0.png"
     },
     
     { 
         "id" : 3,
         "name": "Security Room", 
-        "capacity": 4
+        "capacity": 4,
+        "picture": "assets/img/room-1.png"
     },
 
     { 
         "id" : 1,
         "name": "Reception", 
-        "capacity": 4
+        "capacity": 4,
+        "picture": "assets/img/room-2.png"
     },
 
     { 
         "id" : 2,
         "name": "Server Room", 
-        "capacity": 4
+        "capacity": 4,
+        "picture": "assets/img/room-3.png"
     },
 
 
     { 
         "id" : 4,
         "name": "Staff Room", 
-        "capacity": 4
+        "capacity": 4,
+        "picture": "assets/img/room-4.png"
     },
 
     { 
         "id" : 5,
         "name": "Spare Room", 
-        "capacity": 4
+        "capacity": 4,
+        "picture": "assets/img/room-5.png"
     }
 ]
