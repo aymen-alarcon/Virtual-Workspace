@@ -2,6 +2,7 @@ fetch("zones.json")
 .then((res) => res.json())
 .then((roomData) => roomData.forEach(room => {
         document.querySelector(".row").innerHTML += displayRoom(room)
+        // RoomSaved(room)
     }
 ))
 
@@ -14,15 +15,15 @@ fetch("employees.json")
         }else if(employee.location == "Conference Room"){     
             document.querySelector(".room-0").innerHTML += displayConferenceRoomEmployees(employee)
         }else if(employee.location == "Security Room"){        
-            document.querySelector(".room-1").innerHTML += displaySecurityRoomEmployees(employee)
+            document.querySelector(".room-3").innerHTML += displaySecurityRoomEmployees(employee)
         }else if(employee.location == "Server Room"){        
             document.querySelector(".room-2").innerHTML += displayServerRoomEmployees(employee)
         }else if(employee.location == "Reception Room"){        
-            document.querySelector(".room-3").innerHTML += displayReceptionRoomEmployees(employee)
+            document.querySelector(".room-1").innerHTML += displayReceptionRoomEmployees(employee)
         }else if(employee.location == "Staff Room"){        
             document.querySelector(".room-4").innerHTML += displayStaffRoomEmployees(employee)
         }else if(employee.location == "Spare Room"){        
-            document.querySelector(".room-5").innerHTML += displaySpareRoomEmployees(employee);
+            document.querySelector(".room-5").innerHTML += displaySpareRoomEmployees(employee)
         }
     })
 )
@@ -30,7 +31,7 @@ fetch("employees.json")
 function EmployeeSaved(employee) {
     let data = getEmployeesAddedToLocalStorage("employee");
     
-    if (data.length === 0) {
+    if (!data || data.length === 0) {
         saveToLocalStorage("employee", employee);
         return;
     }
@@ -42,30 +43,20 @@ function EmployeeSaved(employee) {
     }
 }
 
-function loadEmployeesFromLocalStorage() {
-    let savedEmployees = getEmployeesAddedToLocalStorage("employee");
-    if (savedEmployees && savedEmployees.length > 0) {
-        savedEmployees.forEach(employee => {
-            if (employee.location == null) {        
-                document.querySelector(".unassigned-employees").innerHTML += displayUnassignedEmployees(employee);
-            } else if(employee.location == "Conference Room"){     
-                document.querySelector(".room-0").innerHTML += displayConferenceRoomEmployees(employee);
-            } else if(employee.location == "Security Room"){        
-                document.querySelector(".room-1").innerHTML += displaySecurityRoomEmployees(employee);
-            } else if(employee.location == "Server Room"){        
-                document.querySelector(".room-2").innerHTML += displayServerRoomEmployees(employee);
-            } else if(employee.location == "Reception Room"){        
-                document.querySelector(".room-3").innerHTML += displayReceptionRoomEmployees(employee);
-            } else if(employee.location == "Staff Room"){        
-                document.querySelector(".room-4").innerHTML += displayStaffRoomEmployees(employee);
-            }else if(employee.location == "Spare Room"){        
-                document.querySelector(".room-5").innerHTML += displaySpareRoomEmployees(employee);
-            }
-        });
-    }
-}
+// function RoomSaved(room) {
+//     let data = JSON.parse(localStorage.getItem("room"))
+    
+//     if (data.length === 0) {
+//         SaveRoomToLocalStorage("room", room)
+//         return;
+//     }else{
+//         return;
+//     }
+// }
 
-loadEmployeesFromLocalStorage();
+// function SaveRoomToLocalStorage(keyName, roomList) {
+//     localStorage.setItem(keyName, roomList)
+// }
 
 function displayRoom(room) {
         return `
@@ -89,25 +80,45 @@ document.addEventListener("click", (event) => {
     }
 });
 
-function CheckAssignedEmployees(roomName){    
+function CheckAssignedEmployees(roomName){
     let assignedEmployees = getEmployeesAddedToLocalStorage("employee")
 
-    let assignedEmployee = assignedEmployees.filter(assignedEmployeeId => assignedEmployeeId.location === roomName)
-    console.log(assignedEmployee)
-
-    if (assignedEmployee && assignedEmployee.location === roomName) {
-        document.querySelector(".assignedEmployeesCheckbox").setAttribute("checked", "true");
+    let assignedEmployeesList = assignedEmployees.filter(employee => employee.location === roomName)
+    let UnassignedEmployeesList = assignedEmployees.filter(employee => employee.location !== roomName)
+    
+    document.querySelector(".edit_assigned_staff").innerHTML = "";
+    
+    if (assignedEmployeesList.length === 0) {
+        UnassignedEmployeesList.forEach(employee => {
+            document.querySelector(".edit_assigned_staff").innerHTML += displayUnassignedEmployeesList(employee);
+        })
+    } else {
+        UnassignedEmployeesList.forEach(employee => {
+            document.querySelector(".edit_assigned_staff").innerHTML += displayUnassignedEmployeesList(employee);
+        })
+        assignedEmployeesList.forEach(employee => {
+            document.querySelector(".edit_assigned_staff").innerHTML += displayEmployeesInModal(employee);
+        });
     }
-
-    document.querySelector(".edit_assigned_staff").innerHTML += `    
+}
+function displayEmployeesInModal(assignedEmployee) {
+    return`    
         <div class="d-flex gap-5 g-5 assignedEmployeesCheckbox">
-            <input type="checkbox" name="${assignedEmployees.name}">${assignedEmployees.name}
+            <input type="checkbox" name="${assignedEmployee.name}" checked>${assignedEmployee.name}
         </div>
-    `;
+    `
+}
+
+function displayUnassignedEmployeesList(assignedEmployee) {
+    return`    
+        <div class="d-flex gap-5 g-5 assignedEmployeesCheckbox">
+            <input type="checkbox" name="${assignedEmployee.name}">${assignedEmployee.name}
+        </div>
+    `
 }
 
 function displayUnassignedEmployees(employee) {
-        return `
+    return `
             <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
                 <div class="d-flex align-items-center gap-3 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
                     <div class="rounded-circle" style="background-image:url('${employee.photo}');"></div>
@@ -172,7 +183,7 @@ function displayStaffRoomEmployees(employee) {
         `
 }
 
-function displaySecurityRoomEmployees(employee) {
+function displaySpareRoomEmployees(employee) {
         return `
             <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <img src="${employee.photo}" class="rounded-circle me-2">
@@ -185,7 +196,7 @@ function displaySecurityRoomEmployees(employee) {
         `
 }
 
-function displaySpareRoomEmployees(employee) {
+function displaySecurityRoomEmployees(employee) {
         return `
             <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <img src="${employee.photo}" class="rounded-circle me-2">
@@ -208,20 +219,20 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
         role : document.getElementById("workerRole").value,
         email : document.getElementById("workerEmail").value,
         phone : document.getElementById("workerPhone").value,
-        picture : "assets/img/profile.png",
+        photo : "assets/img/profile.png",
         location : null,
-        workerExperience : []
+        experiences : []
     }   
     
     if (form.company.length == undefined && form.role.length == undefined && form.workerDuration.length == undefined) {
-        arr.workerExperience.push({
+        arr.experiences.push({
             company : form.company.value,
             role : form.role.value,
             workerDuration : form.workerDuration.value
         })        
     }else{
         for (let i = 0; i < form.company.length; i++) {      
-            arr.workerExperience.push({
+            arr.experiences.push({
                 company : form.company[i].value,
                 role : form.role[i].value,
                 workerDuration : form.workerDuration[i].value
@@ -234,7 +245,7 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
 })
 
 function getEmployeesAddedToLocalStorage(employeeInformation) {
-    return JSON.parse(localStorage.getItem(employeeInformation)) || [];
+    return JSON.parse(localStorage.getItem(employeeInformation));
 }
 
 function AddNewEmployee(employee) {
@@ -256,7 +267,7 @@ document.getElementById("addExperienceBtn").addEventListener("click", ()=>{
 })
 
 function saveToLocalStorage(keyName, dataList) {
-    let existingEmployees = getEmployeesAddedToLocalStorage(keyName);
+    let existingEmployees = getEmployeesAddedToLocalStorage(keyName) || [] ;
     existingEmployees.push(dataList)
     localStorage.setItem(keyName, JSON.stringify(existingEmployees));
 }
