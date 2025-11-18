@@ -28,5 +28,11 @@
         "id" : 4,
         "name": "Staff Room", 
         "capacity": 4
+    },
+
+    { 
+        "id" : 5,
+        "name": "Spare Room", 
+        "capacity": 4
     }
 ]
