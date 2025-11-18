@@ -1,10 +1,6 @@
 fetch("zones.json")
 .then((res) => res.json())
-.then((roomData) => roomData.forEach(room => {
-        document.querySelector(".row").innerHTML += displayRoom(room)
-        // RoomSaved(room)
-    }
-))
+.then((roomData) => roomData.forEach(room => {document.querySelector(".row").innerHTML += displayRoom(room)}))
 
 fetch("employees.json")
 .then((response) => response.json())
@@ -43,21 +39,6 @@ function EmployeeSaved(employee) {
     }
 }
 
-// function RoomSaved(room) {
-//     let data = JSON.parse(localStorage.getItem("room"))
-    
-//     if (data.length === 0) {
-//         SaveRoomToLocalStorage("room", room)
-//         return;
-//     }else{
-//         return;
-//     }
-// }
-
-// function SaveRoomToLocalStorage(keyName, roomList) {
-//     localStorage.setItem(keyName, roomList)
-// }
-
 function displayRoom(room) {
         return `
             <div class="col-12 col-lg-6 col-xl-4 mb-1">
@@ -73,9 +54,10 @@ function displayRoom(room) {
             </div>
         `
 }
-
+let currentRoomName = null;
 document.addEventListener("click", (event) => {
     if (event.target.classList.contains("addAssignee")) {
+        currentRoomName = event.target.getAttribute("roomName")
         CheckAssignedEmployees(event.target.getAttribute("roomName"));
     }
 });
@@ -104,7 +86,7 @@ function CheckAssignedEmployees(roomName){
 function displayEmployeesInModal(assignedEmployee) {
     return`    
         <div class="d-flex gap-5 g-5 assignedEmployeesCheckbox">
-            <input type="checkbox" name="${assignedEmployee.name}" checked>${assignedEmployee.name}
+            <input type="checkbox" class="checkbox" name="${assignedEmployee.name}" room="${currentRoomName}" checked>${assignedEmployee.name}
         </div>
     `
 }
@@ -112,10 +94,27 @@ function displayEmployeesInModal(assignedEmployee) {
 function displayUnassignedEmployeesList(assignedEmployee) {
     return`    
         <div class="d-flex gap-5 g-5 assignedEmployeesCheckbox">
-            <input type="checkbox" name="${assignedEmployee.name}">${assignedEmployee.name}
+            <input type="checkbox" class="checkbox" name="${assignedEmployee.name}" room="${currentRoomName}">${assignedEmployee.name}
         </div>
     `
 }
+
+document.querySelector('.save_changes').addEventListener("click", ()=>{
+    document.querySelectorAll(".checkbox").forEach(employeeCheckBox =>{
+        if (employeeCheckBox.checked === true) {
+            let nameOfEmployee = employeeCheckBox.getAttribute("name")
+            console.log(nameOfEmployee)
+
+            let nameOfRoom = currentRoomName;
+            console.log(nameOfRoom);
+
+            let employeesList = getEmployeesAddedToLocalStorage("employee")
+            let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
+            employeeToChange.location = nameOfRoom
+            localStorage.setItem("employee", JSON.stringify(employeesList));
+        }
+    })
+})
 
 function displayUnassignedEmployees(employee) {
     return `
