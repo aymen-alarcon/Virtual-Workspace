@@ -49,12 +49,12 @@ roomList.forEach(room => {
 
 document.addEventListener('DOMContentLoaded', ()=> {    
     displayUnassignedEmployees();
-    displayEmployeesInZone("zone1", ".conferenceRoomContainer");
-    displayEmployeesInZone("zone2", ".serverRoomContainer");
-    displayEmployeesInZone("zone3", ".receptionRoomContainer");
-    displayEmployeesInZone("zone4", ".staffRoomContainer");
-    displayEmployeesInZone("zone5", ".spareRoomContainer");
-    displayEmployeesInZone("zone6", ".securityRoomContainer");
+    displayEmployeesInZone("Conference Room", ".room-0");
+    displayEmployeesInZone("Reception", ".room-1");
+    displayEmployeesInZone("Server Room", ".room-2");
+    displayEmployeesInZone("Security Room", ".room-3");
+    displayEmployeesInZone("Staff Room", ".room-4");
+    displayEmployeesInZone("Spare Room", ".room-5");
 });
 
 function displayRoom(room) {
@@ -225,7 +225,7 @@ function displayUnassignedEmployees() {
     
     container.innerHTML = "";
     
-    const unassignedEmployees = employees.filter(employee => employee.location === null);
+    let unassignedEmployees = employees.filter(employee => employee.location === null);
     
     if (unassignedEmployees.length === 0) {
         container.innerHTML = "<p>No unassigned employees</p>";
@@ -250,20 +250,26 @@ function displayUnassignedEmployees() {
 function displayEmployeesInZone(zoneKey, containerSelector) {
     let employees = getEmployeesAddedToLocalStorage("employee") || [];
     let container = document.querySelector(containerSelector);
-    if (!container) return;
-    
+
     container.innerHTML = "";
-    const zoneEmployees = employees.filter(employee => employee.location === zoneKey);
-    
+
+    let zoneEmployees = employees.filter(employeeTemp => employeeTemp.location === zoneKey);
+
     zoneEmployees.forEach(employee => {
         container.innerHTML += `
             <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
-                <img src="${employee.photo}" class="rounded-circle me-2 employee-photo" data-bs-toggle="modal" data-bs-target="#employeeModal" data-employee-name="${employee.name}">
+                <img src="${employee.photo}" class="rounded-circle me-2 employee-photo"
+                     data-bs-toggle="modal" data-bs-target="#employeeModal"
+                     data-employee-name="${employee.name}">
                 <div>
-                    <p class="mb-0 small employeeName" data-employee-name="${employee.name}">${employee.name}</p>
+                    <p class="mb-0 small employeeName" data-employee-name="${employee.name}">
+                        ${employee.name}
+                    </p>
                     <small class="text-muted-light">${employee.role}</small>
                 </div>
-                <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
+                <button class="btn btn-link text-danger ms-auto p-1">
+                    <i class="bi bi-x-circle"></i>
+                </button>
             </div>
         `;
     });
