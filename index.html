@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" class="light">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtual Workspace</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
@@ -19,7 +19,7 @@
           <div class="modal-body edit_assigned_staff d-flex flex-column"></div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" form="assignWorkerForm" class="btn btn-success save_changes">Save Changes</button>
+            <button type="submit" class="btn btn-success save_changes">Save Changes</button>
           </div>
         </div>
       </div>
@@ -116,9 +116,6 @@
         </div>
         <div class="modal-body">
           <form id="addWorkerForm">
-            <center>
-              <div class="rounded-circle bg-light" style="width: 10em; height: 10em;"></div>
-            </center>
             <label for="workerName" class="form-label">Name</label>
             <input type="text" class="form-control" id="workerName" placeholder="Enter worker's full name">
             <label for="workerRole" class="form-label">Role</label>
@@ -142,11 +139,11 @@
 
             <div class="experience_zone bg-light flex-column input-group-text m-2 p-2 rounded-2">
               <label for="company" class="form-label">Company</label>
-              <input type="text" class="form-control company" name="company" placeholder="Experience">
+              <input type="text" class="form-control company" name="company" id="company" placeholder="Experience">
               <label for="role" class="form-label">Role</label>
-              <input type="text" class="form-control role" name="role" placeholder="Experience">
+              <input type="text" class="form-control role" name="role" id="role" placeholder="Experience">
               <label for="workerDuration" class="form-label">Duration</label>
-              <input type="text" class="form-control workerDuration" name="workerDuration" placeholder="Experience">
+              <input type="date" class="form-control workerDuration" name="workerDuration" id="workerDuration">
             </div>
 
             <div class="mb-3">
