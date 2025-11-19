@@ -268,7 +268,7 @@ function displayEmployeesInZone(zoneKey, containerSelector) {
                     <small class="text-muted-light">${employee.role}</small>
                 </div>
                 <button class="btn btn-link text-danger ms-auto p-1">
-                    <i class="bi bi-x-circle"></i>
+                    <i class="bi bi-x-circle" data-employee-name="${employee.name}"></i>
                 </button>
             </div>
         `;
@@ -309,6 +309,21 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
     displayUnassignedEmployees();
     form.reset();
 })
+
+document.addEventListener("click", (event)=>{
+    if (event.target.classList.contains("bi-x-circle")) {        
+        getTheEmployeeBackToTheUnassignedSection(event.target.getAttribute("data-employee-name"))
+    }
+})
+
+function getTheEmployeeBackToTheUnassignedSection(name) {
+    let employeeList = getEmployeesAddedToLocalStorage("employee") || []
+
+    let searchedForEmployee = employeeList.find(employeeTemp => employeeTemp.name === name)
+
+    searchedForEmployee.location = null
+    localStorage.setItem("employee", JSON.stringify(employeeList));
+}
 
 function getEmployeesAddedToLocalStorage(employeeInformation) {
     return JSON.parse(localStorage.getItem(employeeInformation));
