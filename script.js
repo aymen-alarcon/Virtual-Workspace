@@ -2,6 +2,8 @@ fetch("zones.json")
 .then((res) => res.json())
 .then((roomData) => roomData.forEach(room => {document.querySelector(".row").innerHTML += displayRoom(room)}))
 
+let count = 0;
+
 document.addEventListener("DOMContentLoaded", () => {
     let employees = getEmployeesAddedToLocalStorage("employee") || [];
 
@@ -63,15 +65,91 @@ function displayRoom(room) {
             </div>
         `
 }
+
+document.addEventListener("click", (event) => {
+    if (event.target.classList.contains("profile-info")) {
+        loadToProfileModal(event.target.getAttribute("userId"));
+    }
+});
+
+function loadToProfileModal(id) {
+    let employeeList = getEmployeesAddedToLocalStorage("employee")
+    let chosenEmployee = employeeList.find(employeeTemp => employeeTemp.id == id)
+
+    let experienceHTML = "";
+
+    chosenEmployee.experiences.forEach(experience => {
+        experienceHTML += `
+            <div class="d-flex align-items-center mb-3">
+                <span class="bg-light p-3 rounded me-3">
+                    <i class="bi bi-briefcase"></i>
+                </span>
+                <div>
+                    <p class="mb-0 fw-semibold">${experience.role}</p>
+                    <small class="text-muted">${experience.company} | ${experience.workerDuration}</small>
+                </div>
+            </div>
+        `;
+    });
+
+    let locationHTML = "";
+    if(chosenEmployee.location == null){
+        locationHTML = `
+                <small class="text-success">Unassigned</small>
+        `;
+    }else{
+        locationHTML = `
+                <p class="mb-0 fw-semibold">${chosenEmployee.location}</p>
+                <small class="text-success">Assigned</small>
+        `;
+    }
+
+    document.querySelector(".employeeProfile").innerHTML = `
+        <div class="text-center mb-4">
+            <div class="profile-photo mx-auto rounded-circle" style="background-image:url('assets/img/profile.png');"></div>
+            <h4 class="fw-bold mt-3 mb-1">${chosenEmployee.name}</h4>
+            <span class="badge bg-success px-3 py-2">Software Engineer</span>
+          </div>
+
+          <hr>
+
+          <div class="mb-4">
+            <div class="d-flex align-items-center mb-3">
+              <span class="material-symbols-outlined bg-light p-2 rounded me-3">E-mail</span>
+              <span>${chosenEmployee.email}</span>
+            </div>
+            <div class="d-flex align-items-center">
+              <span class="material-symbols-outlined bg-light p-2 rounded me-3">phone</span>
+              <span>${chosenEmployee.phone}</span>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="fw-bold mb-3">Experiences</h6>${experienceHTML}
+          </div>
+
+          <div class="mb-3">
+            <h6 class="fw-bold mb-3">Current Location</h6>
+            <div class="d-flex align-items-center">
+              <span class="bg-light p-3 rounded me-3"><i class="bi bi-geo-alt"></i></span>
+              <div>
+                ${locationHTML}
+              </div>
+            </div>
+          </div>
+    `
+}
+
 let currentRoomName = null;
+
 document.addEventListener("click", (event) => {
     if (event.target.classList.contains("addAssignee")) {
-        currentRoomName = event.target.getAttribute("roomName")
         CheckAssignedEmployees(event.target.getAttribute("roomName"));
     }
 });
 
 function CheckAssignedEmployees(roomName){
+    currentRoomName = roomName;
     let assignedEmployees = getEmployeesAddedToLocalStorage("employee")
 
     let assignedEmployeesList = assignedEmployees.filter(employee => employee.location === roomName)
@@ -92,6 +170,7 @@ function CheckAssignedEmployees(roomName){
         });
     }
 }
+
 function displayEmployeesInModal(assignedEmployee) {
     return`    
         <div class="d-flex gap-5 g-5 assignedEmployeesCheckbox">
@@ -132,8 +211,8 @@ document.querySelector('.save_changes').addEventListener("click", ()=>{
 function displayUnassignedEmployees(employee) {
     return `
             <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
-                <div class="d-flex align-items-center gap-3 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                    <div class="rounded-circle" style="background-image:url('${employee.photo}');"></div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal" style="background-image:url('${employee.photo}');"></div>
                     <div>
                         <p class="mb-0">${employee.name}</p>
                         <small class="text-muted-light">${employee.role}</small>
@@ -145,8 +224,8 @@ function displayUnassignedEmployees(employee) {
 
 function displayConferenceRoomEmployees(employee) {
         return `
-            <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                <img src="${employee.photo}" class="rounded-circle me-2">
+            <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
+                <img src="${employee.photo}" class="rounded-circle me-2 profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <div>
                     <p class="mb-0 small">${employee.name}</p>
                     <small class="text-muted-light">${employee.role}</small>
@@ -158,8 +237,8 @@ function displayConferenceRoomEmployees(employee) {
 
 function displayServerRoomEmployees(employee) {
         return `
-            <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                <img src="${employee.photo}" class="rounded-circle me-2">
+            <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
+                <img src="${employee.photo}" class="rounded-circle me-2 profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <div>
                     <p class="mb-0 small">${employee.name}</p>
                     <small class="text-muted-light">${employee.role}</small>
@@ -171,8 +250,8 @@ function displayServerRoomEmployees(employee) {
 
 function displayReceptionRoomEmployees(employee) {
         return `
-            <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                <img src="${employee.photo}" class="rounded-circle me-2">
+            <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
+                <img src="${employee.photo}" class="rounded-circle me-2 profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <div>
                     <p class="mb-0 small">${employee.name}</p>
                     <small class="text-muted-light">${employee.role}</small>
@@ -184,8 +263,8 @@ function displayReceptionRoomEmployees(employee) {
 
 function displayStaffRoomEmployees(employee) {
         return `
-            <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                <img src="${employee.photo}" class="rounded-circle me-2">
+            <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
+                <img src="${employee.photo}" class="rounded-circle me-2 profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <div>
                     <p class="mb-0 small">${employee.name}</p>
                     <small class="text-muted-light">${employee.role}</small>
@@ -197,8 +276,8 @@ function displayStaffRoomEmployees(employee) {
 
 function displaySpareRoomEmployees(employee) {
         return `
-            <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                <img src="${employee.photo}" class="rounded-circle me-2">
+            <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
+                <img src="${employee.photo}" class="rounded-circle me-2 profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <div>
                     <p class="mb-0 small">${employee.name}</p>
                     <small class="text-muted-light">${employee.role}</small>
@@ -210,8 +289,8 @@ function displaySpareRoomEmployees(employee) {
 
 function displaySecurityRoomEmployees(employee) {
         return `
-            <div class="d-flex align-items-center bg-light p-2 rounded mb-2 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                <img src="${employee.photo}" class="rounded-circle me-2">
+            <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
+                <img src="${employee.photo}" class="rounded-circle me-2 profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal">
                 <div>
                     <p class="mb-0 small">${employee.name}</p>
                     <small class="text-muted-light">${employee.role}</small>
@@ -223,10 +302,11 @@ function displaySecurityRoomEmployees(employee) {
 
 document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
     event.preventDefault();
-    
+    count++; 
     let form = event.target;
 
     let arr = {
+        id : count,
         name : document.getElementById("workerName").value,
         role : document.getElementById("workerRole").value,
         email : document.getElementById("workerEmail").value,
@@ -264,8 +344,8 @@ function getEmployeesAddedToLocalStorage(employeeInformation) {
 function AddNewEmployee(employee) {
     document.querySelector(".unassigned-employees").innerHTML += `
         <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
-            <div class="d-flex align-items-center gap-3 profile-info" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                <div class="rounded-circle" style="background-image:url('assets/img/profile.png');"></div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle profile-info"" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal" style="background-image:url('assets/img/profile.png');"></div>
                 <div>
                     <p class="mb-0">${employee.name}</p>
                     <small class="text-muted-light">${employee.role}</small>
