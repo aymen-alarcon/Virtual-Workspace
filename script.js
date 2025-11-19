@@ -1,7 +1,51 @@
+let roomList =[
+    { 
+        "id" : 0,
+        "name": "Conference Room", 
+        "capacity": 4,
+        "picture": "assets/img/room-0.png"
+    },
+    
+    { 
+        "id" : 3,
+        "name": "Security Room", 
+        "capacity": 4,
+        "picture": "assets/img/room-1.png"
+    },
 
-fetch("zones.json")
-.then((res) => res.json())
-.then((roomData) => roomData.forEach(room => {document.querySelector(".row").innerHTML += displayRoom(room)}))
+    { 
+        "id" : 1,
+        "name": "Reception", 
+        "capacity": 4,
+        "picture": "assets/img/room-2.png"
+    },
+
+    { 
+        "id" : 2,
+        "name": "Server Room", 
+        "capacity": 4,
+        "picture": "assets/img/room-3.png"
+    },
+
+
+    { 
+        "id" : 4,
+        "name": "Staff Room", 
+        "capacity": 4,
+        "picture": "assets/img/room-4.png"
+    },
+
+    { 
+        "id" : 5,
+        "name": "Spare Room", 
+        "capacity": 4,
+        "picture": "assets/img/room-5.png"
+    }
+]
+
+roomList.forEach(room => {
+    document.querySelector(".row").innerHTML += displayRoom(room)
+})
 
 document.addEventListener('DOMContentLoaded', ()=> {    
     displayUnassignedEmployees();
@@ -12,21 +56,6 @@ document.addEventListener('DOMContentLoaded', ()=> {
     displayEmployeesInZone("zone5", ".spareRoomContainer");
     displayEmployeesInZone("zone6", ".securityRoomContainer");
 });
-
-function EmployeeSaved(employee) {
-    let data = getEmployeesAddedToLocalStorage("employee");
-    
-    if (!data || data.length === 0) {
-        saveToLocalStorage("employee", employee);
-        return;
-    }
-    
-    let employeeExist = data.some(emp => emp.name === employee.name);
-    
-    if (!employeeExist) {
-        saveToLocalStorage("employee", employee);
-    }
-}
 
 function displayRoom(room) {
         return `
@@ -45,13 +74,8 @@ function displayRoom(room) {
 }
 
 document.addEventListener("click", (event) => {
-    if (event.target.classList.contains("employeeName")) {
-        const employeeName = event.target.getAttribute('data-employee-name') || event.target.textContent;
-        loadToProfileModal(employeeName);
-    }
-    
     if (event.target.classList.contains("employee-photo")) {
-        const employeeName = event.target.getAttribute('data-employee-name');
+        let employeeName = event.target.getAttribute('data-employee-name');
         loadToProfileModal(employeeName);
     }
 });
