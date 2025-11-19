@@ -1,38 +1,16 @@
+
 fetch("zones.json")
 .then((res) => res.json())
 .then((roomData) => roomData.forEach(room => {document.querySelector(".row").innerHTML += displayRoom(room)}))
 
-let count = 0;
-
-document.addEventListener("DOMContentLoaded", () => {
-    let employees = getEmployeesAddedToLocalStorage("employee") || [];
-
-    employees.forEach(employee => {
-        if (!employee.location) {        
-            let unassignedContainer = document.querySelector(".unassigned-employees");
-            if (unassignedContainer) {
-                unassignedContainer.innerHTML += displayUnassignedEmployees(employee);
-            }
-        } else if(employee.location === "Conference Room"){     
-            let room0 = document.querySelector(".room-0");
-            if (room0) room0.innerHTML += displayConferenceRoomEmployees(employee);
-        } else if(employee.location === "Security Room"){        
-            let room3 = document.querySelector(".room-3");
-            if (room3) room3.innerHTML += displaySecurityRoomEmployees(employee);
-        } else if(employee.location === "Server Room"){        
-            let room2 = document.querySelector(".room-2");
-            if (room2) room2.innerHTML += displayServerRoomEmployees(employee);
-        } else if(employee.location === "Reception"){        
-            let room1 = document.querySelector(".room-1");
-            if (room1) room1.innerHTML += displayReceptionRoomEmployees(employee);
-        } else if(employee.location === "Staff Room"){        
-            let room4 = document.querySelector(".room-4");
-            if (room4) room4.innerHTML += displayStaffRoomEmployees(employee);
-        } else if(employee.location === "Spare Room"){        
-            let room5 = document.querySelector(".room-5");
-            if (room5) room5.innerHTML += displaySpareRoomEmployees(employee);
-        }
-    });
+document.addEventListener('DOMContentLoaded', ()=> {    
+    displayUnassignedEmployees();
+    displayEmployeesInZone("zone1", ".conferenceRoomContainer");
+    displayEmployeesInZone("zone2", ".serverRoomContainer");
+    displayEmployeesInZone("zone3", ".receptionRoomContainer");
+    displayEmployeesInZone("zone4", ".staffRoomContainer");
+    displayEmployeesInZone("zone5", ".spareRoomContainer");
+    displayEmployeesInZone("zone6", ".securityRoomContainer");
 });
 
 function EmployeeSaved(employee) {
@@ -67,14 +45,20 @@ function displayRoom(room) {
 }
 
 document.addEventListener("click", (event) => {
-    if (event.target.classList.contains("profile-info")) {
-        loadToProfileModal(event.target.getAttribute("userId"));
+    if (event.target.classList.contains("employeeName")) {
+        const employeeName = event.target.getAttribute('data-employee-name') || event.target.textContent;
+        loadToProfileModal(employeeName);
+    }
+    
+    if (event.target.classList.contains("employee-photo")) {
+        const employeeName = event.target.getAttribute('data-employee-name');
+        loadToProfileModal(employeeName);
     }
 });
 
-function loadToProfileModal(id) {
+function loadToProfileModal(name) {
     let employeeList = getEmployeesAddedToLocalStorage("employee")
-    let chosenEmployee = employeeList.find(employeeTemp => employeeTemp.id == id)
+    let chosenEmployee = employeeList.find(employeeTemp => employeeTemp.name == name)
 
     let experienceHTML = "";
 
@@ -206,107 +190,66 @@ document.querySelector('.save_changes').addEventListener("click", ()=>{
             localStorage.setItem("employee", JSON.stringify(employeesList));
         }
     })
+    displayUnassignedEmployees();
 })
 
-function displayUnassignedEmployees(employee) {
-    return `
+function displayUnassignedEmployees() {
+    let employees = getEmployeesAddedToLocalStorage("employee") || [];
+    let container = document.querySelector(".unassigned-employees");
+    
+    if (!container) return;
+    
+    container.innerHTML = "";
+    
+    const unassignedEmployees = employees.filter(employee => employee.location === null);
+    
+    if (unassignedEmployees.length === 0) {
+        container.innerHTML = "<p>No unassigned employees</p>";
+        return;
+    }
+    
+    unassignedEmployees.forEach(employee => {
+        container.innerHTML += `
             <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal" style="background-image:url('${employee.photo}');"></div>
+                    <div class="rounded-circle employee-photo" data-bs-toggle="modal" data-bs-target="#employeeModal" data-employee-name="${employee.name}" style="background-image:url('${employee.photo}');"></div>
                     <div>
-                        <p class="mb-0">${employee.name}</p>
+                        <p class="mb-0 employeeName" data-employee-name="${employee.name}">${employee.name}</p>
                         <small class="text-muted-light">${employee.role}</small>
                     </div>
                 </div>
             </div>
-        `
+        `;    
+    });
 }
 
-function displayConferenceRoomEmployees(employee) {
-        return `
+function displayEmployeesInZone(zoneKey, containerSelector) {
+    let employees = getEmployeesAddedToLocalStorage("employee") || [];
+    let container = document.querySelector(containerSelector);
+    if (!container) return;
+    
+    container.innerHTML = "";
+    const zoneEmployees = employees.filter(employee => employee.location === zoneKey);
+    
+    zoneEmployees.forEach(employee => {
+        container.innerHTML += `
             <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
-                <img src="${employee.photo}" class="rounded-circle me-2 profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal">
+                <img src="${employee.photo}" class="rounded-circle me-2 employee-photo" data-bs-toggle="modal" data-bs-target="#employeeModal" data-employee-name="${employee.name}">
                 <div>
-                    <p class="mb-0 small">${employee.name}</p>
+                    <p class="mb-0 small employeeName" data-employee-name="${employee.name}">${employee.name}</p>
                     <small class="text-muted-light">${employee.role}</small>
                 </div>
                 <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
-            </div>           
-        `
-}
-
-function displayServerRoomEmployees(employee) {
-        return `
-            <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
-                <img src="${employee.photo}" class="rounded-circle me-2 profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                <div>
-                    <p class="mb-0 small">${employee.name}</p>
-                    <small class="text-muted-light">${employee.role}</small>
-                </div>
-                <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
-            </div>           
-        `
-}
-
-function displayReceptionRoomEmployees(employee) {
-        return `
-            <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
-                <img src="${employee.photo}" class="rounded-circle me-2 profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                <div>
-                    <p class="mb-0 small">${employee.name}</p>
-                    <small class="text-muted-light">${employee.role}</small>
-                </div>
-                <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
-            </div>           
-        `
-}
-
-function displayStaffRoomEmployees(employee) {
-        return `
-            <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
-                <img src="${employee.photo}" class="rounded-circle me-2 profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                <div>
-                    <p class="mb-0 small">${employee.name}</p>
-                    <small class="text-muted-light">${employee.role}</small>
-                </div>
-                <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
-            </div>           
-        `
-}
-
-function displaySpareRoomEmployees(employee) {
-        return `
-            <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
-                <img src="${employee.photo}" class="rounded-circle me-2 profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                <div>
-                    <p class="mb-0 small">${employee.name}</p>
-                    <small class="text-muted-light">${employee.role}</small>
-                </div>
-                <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
-            </div>           
-        `
-}
-
-function displaySecurityRoomEmployees(employee) {
-        return `
-            <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
-                <img src="${employee.photo}" class="rounded-circle me-2 profile-info" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal">
-                <div>
-                    <p class="mb-0 small">${employee.name}</p>
-                    <small class="text-muted-light">${employee.role}</small>
-                </div>
-                <button class="btn btn-link text-danger ms-auto p-1"><i class="bi bi-x-circle"></i></button>
-            </div>           
-        `
+            </div>
+        `;
+    });
 }
 
 document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
     event.preventDefault();
-    count++; 
     let form = event.target;
 
     let arr = {
-        id : count,
         name : document.getElementById("workerName").value,
         role : document.getElementById("workerRole").value,
         email : document.getElementById("workerEmail").value,
@@ -333,7 +276,7 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
     }
 
     saveToLocalStorage("employee", arr)
-    AddNewEmployee(arr)
+    displayUnassignedEmployees();
     form.reset();
 })
 
@@ -345,7 +288,7 @@ function AddNewEmployee(employee) {
     document.querySelector(".unassigned-employees").innerHTML += `
         <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
             <div class="d-flex align-items-center gap-3">
-                <div class="rounded-circle profile-info"" userId="${employee.id}" data-bs-toggle="modal" data-bs-target="#employeeModal" style="background-image:url('assets/img/profile.png');"></div>
+                <div class="rounded-circle" data-bs-toggle="modal" data-bs-target="#employeeModal" style="background-image:url('assets/img/profile.png');"></div>
                 <div>
                     <p class="mb-0">${employee.name}</p>
                     <small class="text-muted-light">${employee.role}</small>
