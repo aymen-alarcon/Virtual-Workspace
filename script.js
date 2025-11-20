@@ -206,7 +206,7 @@ function displayUnassignedEmployeesList(assignedEmployee) {
 }
 
 document.getElementById("workerPhoto").addEventListener("change", () =>{
-    document.querySelector(".preVisualization").src = document.getElementById("workerPhoto").value
+    document.querySelector(".preVisualization").src = document.getElementById("workerPhoto").value.split("\\").pop()
 })
 
 document.querySelector('.save_changes').addEventListener("click", ()=>{
