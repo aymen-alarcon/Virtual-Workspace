@@ -42,20 +42,16 @@ let roomList =[
         "picture": "assets/img/room-5.png"
     }
 ]
+LoadRoomsArrayToLocalStorage(roomList)
 
-roomList.forEach(room => {
-    document.querySelector(".row").innerHTML += displayRoom(room)
-})
-
-document.addEventListener('DOMContentLoaded', ()=> {    
-    displayUnassignedEmployees();
-    displayEmployeesInZone("Conference Room", ".room-0");
-    displayEmployeesInZone("Reception", ".room-1");
-    displayEmployeesInZone("Server Room", ".room-2");
-    displayEmployeesInZone("Security Room", ".room-3");
-    displayEmployeesInZone("Staff Room", ".room-4");
-    displayEmployeesInZone("Spare Room", ".room-5");
-});
+function LoadRoomsArrayToLocalStorage(roomList) {
+    let roomArray = getEmployeesAddedToLocalStorage("rooms") || []
+    if (roomArray.length === 0) {        
+        localStorage.setItem("rooms", JSON.stringify(roomList))
+    }else{
+        return
+    }
+}
 
 function displayRoom(room) {
         return `
@@ -72,6 +68,20 @@ function displayRoom(room) {
             </div>
         `
 }
+
+roomList.forEach(room => {
+    document.querySelector(".row").innerHTML += displayRoom(room)
+})
+
+document.addEventListener('DOMContentLoaded', ()=> {    
+    displayUnassignedEmployees();
+    displayEmployeesInZone("Conference Room", ".room-0");
+    displayEmployeesInZone("Reception", ".room-1");
+    displayEmployeesInZone("Server Room", ".room-2");
+    displayEmployeesInZone("Security Room", ".room-3");
+    displayEmployeesInZone("Staff Room", ".room-4");
+    displayEmployeesInZone("Spare Room", ".room-5");
+});
 
 document.addEventListener("click", (event) => {
     if (event.target.classList.contains("employee-photo")) {
@@ -158,7 +168,7 @@ document.addEventListener("click", (event) => {
 
 function CheckAssignedEmployees(roomName){
     currentRoomName = roomName;
-    let assignedEmployees = getEmployeesAddedToLocalStorage("employee")
+    let assignedEmployees = getEmployeesAddedToLocalStorage("employee") || []
 
     let assignedEmployeesList = assignedEmployees.filter(employee => employee.location === roomName)
     let UnassignedEmployeesList = assignedEmployees.filter(employee => employee.location === null)
@@ -167,19 +177,19 @@ function CheckAssignedEmployees(roomName){
     
     if (assignedEmployeesList.length === 0) {
         UnassignedEmployeesList.forEach(employee => {
-            document.querySelector(".edit_assigned_staff").innerHTML += displayUnassignedEmployeesList(employee);
+            document.querySelector(".edit_assigned_staff").innerHTML += displayUnassignedEmployeesList(employee, roomName);
         })
     } else {
         UnassignedEmployeesList.forEach(employee => {
-            document.querySelector(".edit_assigned_staff").innerHTML += displayUnassignedEmployeesList(employee);
+            document.querySelector(".edit_assigned_staff").innerHTML += displayUnassignedEmployeesList(employee, roomName);
         })
         assignedEmployeesList.forEach(employee => {
-            document.querySelector(".edit_assigned_staff").innerHTML += displayEmployeesInModal(employee);
+            document.querySelector(".edit_assigned_staff").innerHTML += displayEmployeesInModal(employee, roomName);
         });
     }
 }
 
-function displayEmployeesInModal(assignedEmployee) {
+function displayEmployeesInModal(assignedEmployee, roomName) {
     return`    
         <div class="d-flex gap-5 g-5 assignedEmployeesCheckbox">
             <input type="checkbox" class="checkbox" name="${assignedEmployee.name}" room="${currentRoomName}" checked>${assignedEmployee.name}
@@ -194,6 +204,10 @@ function displayUnassignedEmployeesList(assignedEmployee) {
         </div>
     `
 }
+
+document.getElementById("workerPhoto").addEventListener("change", () =>{
+    document.querySelector(".preVisualization").src = document.getElementById("workerPhoto").value
+})
 
 document.querySelector('.save_changes').addEventListener("click", ()=>{
     document.querySelectorAll(".checkbox").forEach(employeeCheckBox =>{
