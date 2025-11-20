@@ -189,7 +189,7 @@ function CheckAssignedEmployees(roomName){
     }
 }
 
-function displayEmployeesInModal(assignedEmployee, roomName) {
+function displayEmployeesInModal(assignedEmployee) {
     return`    
         <div class="d-flex gap-5 g-5 assignedEmployeesCheckbox">
             <input type="checkbox" class="checkbox" name="${assignedEmployee.name}" room="${currentRoomName}" checked>${assignedEmployee.name}
@@ -214,6 +214,19 @@ document.querySelector('.save_changes').addEventListener("click", ()=>{
         if (employeeCheckBox.checked === true) {
             let nameOfEmployee = employeeCheckBox.getAttribute("name")
             let nameOfRoom = currentRoomName;
+
+            roomArray = JSON.parse(localStorage.getItem("rooms"))
+            
+            roomArray.forEach(room =>{
+                if (room.name === currentRoomName) {
+                    if (room.capacity > 0) {
+                        room.capacity --;
+                        localStorage.setItem("rooms", JSON.stringify(roomArray))                        
+                    }else if(room.capacity === 0){
+                        return
+                    }
+                }
+            })
 
             let employeesList = getEmployeesAddedToLocalStorage("employee")
             let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
