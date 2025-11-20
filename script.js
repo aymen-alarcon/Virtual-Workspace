@@ -44,6 +44,92 @@ let roomList =[
 ]
 LoadRoomsArrayToLocalStorage(roomList)
 
+let NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ' -]{2,50}$/;
+let EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+let PHONE_REGEX = /^\+?[0-9\s().-]{7,20}$/;
+let URL_REGEX = /^(https?:\/\/).+/i;
+
+function setFieldValidity(el, message) {
+    if (!el) return;
+    el.setCustomValidity(message || '');
+    if (message) el.reportValidity();
+}
+
+function clearFieldValidity(el) {
+    if (!el) return;
+    el.setCustomValidity('');
+}
+
+function validateNameField(el) {
+    let val = (el.value || '').trim();
+    if (!NAME_REGEX.test(val)) {
+        setFieldValidity(el, 'Enter a valid name (2-50 letters, spaces, hyphens allowed).');
+        return false;
+    }
+    clearFieldValidity(el);
+    return true;
+}
+
+function validateEmailField(el) {
+    let val = (el.value || '').trim();
+    if (!EMAIL_REGEX.test(val)) {
+        setFieldValidity(el, 'Enter a valid email address.');
+        return false;
+    }
+    clearFieldValidity(el);
+    return true;
+}
+
+function validatePhoneField(el) {
+    let val = (el.value || '').trim();
+    if (val.length > 0 && !PHONE_REGEX.test(val)) {
+        setFieldValidity(el, 'Enter a valid phone number.');
+        return false;
+    }
+    clearFieldValidity(el);
+    return true;
+}
+
+function validateUrlField(el) {
+    let val = (el.value || '').trim();
+    if (val.length > 0 && !URL_REGEX.test(val)) {
+        setFieldValidity(el, 'Enter a valid URL (starting with http:// or https://).');
+        return false;
+    }
+    clearFieldValidity(el);
+    return true;
+}
+
+function validateExperiences(form) {
+    let valid = true;
+    if (form.company && form.role && form.workerDuration) {
+        if (form.company.length === undefined) {
+            if (form.company.value.trim() === '' && form.role.value.trim() === '' && form.workerDuration.value === '') {
+            } else {
+                if (form.company.value.trim() === '' || form.role.value.trim() === '') {
+                    setFieldValidity(form.company, 'Please fill company and role or remove the experience.');
+                    valid = false;
+                } else {
+                    clearFieldValidity(form.company);
+                }
+            }
+        } else {
+            for (let i = 0; i < form.company.length; i++) {
+                let c = form.company[i];
+                let r = form.role[i];
+                if (c.value.trim() === '' && r.value.trim() === '' && form.workerDuration[i].value === '') continue;
+                if (c.value.trim() === '' || r.value.trim() === '') {
+                    setFieldValidity(c, 'Please fill company and role or remove the experience.');
+                    valid = false;
+                } else {
+                    clearFieldValidity(c);
+                }
+            }
+        }
+    }
+    return valid;
+}
+
 function LoadRoomsArrayToLocalStorage(roomList) {
     let roomArray = getEmployeesAddedToLocalStorage("rooms") || []
     if (roomArray.length === 0) {        
@@ -382,12 +468,30 @@ function displayEmployeesInZone(zoneKey, containerSelector) {
 document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
     event.preventDefault();
     let form = event.target;
+    let nameEl = document.getElementById('workerName');
+    let roleEl = document.getElementById('workerRole');
+    let emailEl = document.getElementById('workerEmail');
+    let phoneEl = document.getElementById('workerPhone');
+
+    let valid = true;
+    if (!validateNameField(nameEl)) valid = false;
+    if (!roleEl.value) {
+        setFieldValidity(roleEl, 'Please select a role.');
+        valid = false;
+    } else {
+        clearFieldValidity(roleEl);
+    }
+    if (!validateEmailField(emailEl)) valid = false;
+    if (!validatePhoneField(phoneEl)) valid = false;
+    if (!validateExperiences(form)) valid = false;
+
+    if (!valid) return;
 
     let arr = {
-        name : document.getElementById("workerName").value,
-        role : document.getElementById("workerRole").value,
-        email : document.getElementById("workerEmail").value,
-        phone : document.getElementById("workerPhone").value,
+        name : nameEl.value.trim(),
+        role : roleEl.value,
+        email : emailEl.value.trim(),
+        phone : phoneEl.value.trim(),
         photo : "assets/img/profile.png",
         location : null,
         experiences : []
@@ -413,6 +517,38 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
     displayUnassignedEmployees();
     form.reset();
 })
+
+let editForm = document.getElementById('editWorkerForm');
+if (editForm) {
+    editForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        let nameEl = document.getElementById('editWorkerName');
+        let roleEl = document.getElementById('editWorkerRole');
+        let emailEl = document.getElementById('editWorkerEmail');
+        let phoneEl = document.getElementById('editWorkerPhone');
+        let photoEl = document.getElementById('editWorkerPhoto');
+
+        let valid = true;
+        if (!validateNameField(nameEl)) valid = false;
+        if (!roleEl.value) {
+            setFieldValidity(roleEl, 'Please select a role.');
+            valid = false;
+        } else {
+            clearFieldValidity(roleEl);
+        }
+        if (!validateEmailField(emailEl)) valid = false;
+        if (!validatePhoneField(phoneEl)) valid = false;
+        if (!validateUrlField(photoEl)) valid = false;
+
+        if (!valid) return;
+
+        let modalEl = document.getElementById('editWorkerModal');
+        if (modalEl) {
+            let bsModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            bsModal.hide();
+        }
+    });
+}
 
 document.addEventListener("click", (event)=>{
     if (event.target.classList.contains("bi-x-circle")) {        
@@ -465,3 +601,17 @@ function saveToLocalStorage(keyName, dataList) {
     existingEmployees.push(dataList)
     localStorage.setItem(keyName, JSON.stringify(existingEmployees));
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    let addForm = document.getElementById('addWorkerForm');
+    let editForm = document.getElementById('editWorkerForm');
+    let attachClearListeners = (form) => {
+        if (!form) return;
+        form.querySelectorAll('input, select, textarea').forEach(el => {
+            el.addEventListener('input', () => clearFieldValidity(el));
+            el.addEventListener('change', () => clearFieldValidity(el));
+        });
+    };
+    attachClearListeners(addForm);
+    attachClearListeners(editForm);
+});
