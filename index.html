@@ -97,10 +97,9 @@
         <div class="modal-body employeeProfile">
         </div>
 
-        <div class="modal-footer d-flex flex-column gap-2 border-0">
+        <div class="modal-footer EditEmployeeButtons d-flex flex-column gap-2 border-0">
           <button class="btn btn-success w-100" data-bs-toggle="modal" id="editWorkerModalButton" data-bs-target="#editWorkerModal">Edit Profile</button>
-          <button class="btn btn-warning w-100">Remove from zone</button>
-          <button class="btn btn-danger w-100">Delete Employee</button>
+          <button class="btn btn-danger deleteEmployee w-100">Delete Employee</button>
         </div>
 
       </div>
@@ -169,7 +168,7 @@
     </div>
   </div>
 
-  <div class="d-flex vh-100">
+  <main class="d-flex vh-100">
     <aside class="d-flex flex-column p-3 border-end bg-card-light shadow-soft">
       <div class="d-flex align-items-center mb-4 gap-3">
         <h1 class="h5 mb-0">WorkSphere</h1>
@@ -182,17 +181,19 @@
         </div>
       </div>
 
-      <div class="mb-3"><button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#addWorkerModal">+ Add New Staff</button></div>
+      <div class="mb-3">
+        <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#addWorkerModal">+ Add New Staff</button>
+      </div>
 
       <div class="unassigned-employees flex-column overflow-auto">
         <h6 class="text-muted-light mb-2">UNASSIGNED STAFF</h6>
       </div>
     </aside>
-    <main class="flex-fill p-2">
+    <div class="flex-fill p-2">
       <div class="row g-3 vh-100">
       </div>
-    </main>
-  </div>
+    </div>
+  </main>
   <script src="script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

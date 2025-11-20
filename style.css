@@ -13,3 +13,13 @@
 .profile-info{
     cursor: pointer;
 }
+
+.employee-photo{
+    cursor: pointer;
+}
+
+@media screen and (max-width: 767px) {
+    .d-flex.vh-100{
+        flex-direction: column;
+    }   
+}

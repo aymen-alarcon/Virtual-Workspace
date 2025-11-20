@@ -348,7 +348,7 @@ function displayUnassignedEmployees() {
                 </div>
             </div>
         `;    
-    });
+    });   
 }
 
 function displayEmployeesInZone(zoneKey, containerSelector) {
