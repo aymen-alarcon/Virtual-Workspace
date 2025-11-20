@@ -213,25 +213,23 @@ document.querySelector('.save_changes').addEventListener("click", ()=>{
     document.querySelectorAll(".checkbox").forEach(employeeCheckBox =>{
         if (employeeCheckBox.checked === true) {
             let nameOfEmployee = employeeCheckBox.getAttribute("name")
-            let nameOfRoom = currentRoomName;
 
             roomArray = JSON.parse(localStorage.getItem("rooms"))
-            
+
             roomArray.forEach(room =>{
                 if (room.name === currentRoomName) {
-                    if (room.capacity > 0) {
+                    if (room.name === currentRoomName && room.capacity > 980) {
                         room.capacity --;
-                        localStorage.setItem("rooms", JSON.stringify(roomArray))                        
+                        localStorage.setItem("rooms", JSON.stringify(roomArray))   
+                        let employeesList = getEmployeesAddedToLocalStorage("employee") || []
+                        let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
+                        employeeToChange.location = currentRoomName
+                        localStorage.setItem("employee", JSON.stringify(employeesList));
                     }else if(room.capacity === 0){
-                        return
+                        return;
                     }
                 }
             })
-
-            let employeesList = getEmployeesAddedToLocalStorage("employee")
-            let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
-            employeeToChange.location = nameOfRoom
-            localStorage.setItem("employee", JSON.stringify(employeesList));
         }else{
             let nameOfEmployee = employeeCheckBox.getAttribute("name")
 
@@ -257,7 +255,7 @@ function displayUnassignedEmployees() {
     if (unassignedEmployees.length === 0) {
         container.innerHTML = "<p>No unassigned employees</p>";
         return;
-    }
+    } 
     
     unassignedEmployees.forEach(employee => {
         container.innerHTML += `
@@ -295,7 +293,7 @@ function displayEmployeesInZone(zoneKey, containerSelector) {
                     <small class="text-muted-light">${employee.role}</small>
                 </div>
                 <button class="btn btn-link text-danger ms-auto p-1">
-                    <i class="bi bi-x-circle" data-employee-name="${employee.name}"></i>
+                    <i class="bi bi-x-circle" data-employee-name="${employee.name}" data-employee-location="${employee.location}"></i>
                 </button>
             </div>
         `;
@@ -339,11 +337,20 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
 
 document.addEventListener("click", (event)=>{
     if (event.target.classList.contains("bi-x-circle")) {        
-        getTheEmployeeBackToTheUnassignedSection(event.target.getAttribute("data-employee-name"))
+        getTheEmployeeBackToTheUnassignedSection(event.target.getAttribute("data-employee-name"), event.target.getAttribute("data-employee-location"))
     }
 })
 
-function getTheEmployeeBackToTheUnassignedSection(name) {
+function getTheEmployeeBackToTheUnassignedSection(name, currentRoomName) {
+    roomArray = JSON.parse(localStorage.getItem("rooms"))
+    
+    roomArray.forEach(room =>{
+        if (room.name === currentRoomName) {
+            room.capacity ++;
+            localStorage.setItem("rooms", JSON.stringify(roomArray)) 
+        }
+    })
+
     let employeeList = getEmployeesAddedToLocalStorage("employee") || []
 
     let searchedForEmployee = employeeList.find(employeeTemp => employeeTemp.name === name)
