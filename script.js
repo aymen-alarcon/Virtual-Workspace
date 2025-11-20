@@ -140,24 +140,40 @@ function LoadRoomsArrayToLocalStorage(roomList) {
 }
 
 function displayRoom(room) {
-        return `
-            <div class="col-12 col-lg-6 col-xl-4 mb-1">
-                <div class="card bg-card-light shadow-soft h-100 rounded-xl" style="background-image: url('${room.picture}'); background-size: cover;">
-                    <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h5 class="card-title text-white mb-0">${room.name}</h5>
-                            <button class="btn btn-link text-white text-decoration-none p-0 addAssignee" roomName="${room.name}" data-bs-toggle="modal" data-bs-target="#assignWorker"><i class="bi bi-plus-circle"></i>Assign</button>
-                        </div>
-                        <div class="flex-fill room-${room.id}"></div>
+    let backgroundGroundStyle = `background-image: url('${room.picture}'); background-size: cover;`;
+
+    if (room.capacity === 4 && room.name !== "Conference Room" && room.name !== "Staff Room") {
+        backgroundGroundStyle = `background-image: linear-gradient(rgba(255, 0, 0, 0.45), rgba(255, 0, 0, 0.45)),
+            url('${room.picture}'); background-size: cover;`;
+    }else if (room.capacity !== 4 && room.name !== "Conference Room" && room.name !== "Staff Room") {
+        backgroundGroundStyle = `background-image: url('${room.picture}'); background-size: cover;`;
+    }
+
+    return `
+        <div class="col-12 col-lg-6 col-xl-4 mb-1 room-card">
+            <div class="card bg-card-light shadow-soft h-100 rounded-xl" style="${backgroundGroundStyle}">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="card-title text-white mb-0">${room.name}</h5>
+                        <button class="btn btn-link text-white text-decoration-none p-0 addAssignee" roomName="${room.name}" data-bs-toggle="modal" data-bs-target="#assignWorker"><i class="bi bi-plus-circle"></i>Assign</button>
                     </div>
+                    <div class="flex-fill room-${room.id}"></div>
                 </div>
             </div>
-        `
+        </div>
+    `
 }
 
-roomList.forEach(room => {
-    document.querySelector(".row").innerHTML += displayRoom(room)
-})
+function renderRooms() {
+    let roomsFromStorage = getEmployeesAddedToLocalStorage("rooms") || roomList;
+    let row = document.querySelector('.row');
+    if (!row) return;
+    row.innerHTML = '';
+    roomsFromStorage.forEach(room => {
+        row.innerHTML += displayRoom(room);
+    });
+}
+renderRooms();
 
 document.addEventListener('DOMContentLoaded', ()=> {    
     displayUnassignedEmployees();
@@ -304,65 +320,69 @@ document.querySelector('.save_changes').addEventListener("click", ()=>{
             let employeesList = getEmployeesAddedToLocalStorage("employee") || []
             let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
             if (employeeToChange.role === "receptionist") {                
-                roomArray.forEach(room =>{
-                    if (currentRoomName === "Reception") {
-                        if (currentRoomName === "Reception" && room.capacity > 0) {
-                            room.capacity --;
-                            localStorage.setItem("rooms", JSON.stringify(roomArray))   
-                            employeeToChange.location = "Reception"
+                roomArray.forEach(room => {
+                    if (room.name === "Reception") {
+                        if (room.capacity > 0) {
+                            room.capacity--;
+                            localStorage.setItem("rooms", JSON.stringify(roomArray));
+
+                            employeeToChange.location = "Reception";
                             localStorage.setItem("employee", JSON.stringify(employeesList));
-                        }else if(room.capacity === 0){
-                            return;
                         }
-                    }else{
-                        return;
                     }
-                })
-            }else if (employeeToChange.role === "it") {
-                roomArray.forEach(room =>{
-                    if (currentRoomName === "Server Room") {
-                        if (currentRoomName === "Server Room" && room.capacity > 0) {
-                            room.capacity --;
-                            localStorage.setItem("rooms", JSON.stringify(roomArray))   
-                            employeeToChange.location = "Server Room"
-                            localStorage.setItem("employee", JSON.stringify(employeesList));
-                        }else if(room.capacity === 0){
-                            return;
-                        }
-                    }else{
-                        return;
-                    }
-                })
+                });
             }
-            else if (employeeToChange.role === "security") {
-                roomArray.forEach(room =>{
-                    if (currentRoomName === "Security Room") {
-                        if (currentRoomName === "Security Room" && room.capacity > 0) {
-                            room.capacity --;
-                            localStorage.setItem("rooms", JSON.stringify(roomArray))   
-                            employeeToChange.location = "Security Room"
+            else if (employeeToChange.role === "it") {                
+                roomArray.forEach(room => {
+                    if (room.name === "Server Room") {
+                        if (room.capacity > 0) {
+                            room.capacity--;
+                            localStorage.setItem("rooms", JSON.stringify(roomArray));
+
+                            employeeToChange.location = "Server Room";
                             localStorage.setItem("employee", JSON.stringify(employeesList));
-                        }else if(room.capacity === 0){
-                            return;
                         }
-                    }else{
-                        return;
                     }
-                })
+                });
             }
-            else if (employeeToChange.role === "manager") {
-                roomArray.forEach(room =>{
+            else if (employeeToChange.role === "security") {                
+                roomArray.forEach(room => {
+                    if (room.name === "Security Room") {
+                        if (room.capacity > 0) {
+                            room.capacity--;
+                            localStorage.setItem("rooms", JSON.stringify(roomArray));
+
+                            employeeToChange.location = "Security Room";
+                            localStorage.setItem("employee", JSON.stringify(employeesList));
+                        }
+                    }
+                });
+            }
+            else if (employeeToChange.role === "manager") {                
+                roomArray.forEach(room => {
                     if (room.name === currentRoomName) {
-                        if (room.name === currentRoomName && room.capacity > 0) {
-                            room.capacity --;
-                            localStorage.setItem("rooms", JSON.stringify(roomArray))   
-                            employeeToChange.location = currentRoomName
+                        if (room.capacity > 0) {
+                            room.capacity--;
+                            localStorage.setItem("rooms", JSON.stringify(roomArray));
+
+                            employeeToChange.location = currentRoomName;
                             localStorage.setItem("employee", JSON.stringify(employeesList));
-                        }else if(room.capacity === 0){
-                            return;
                         }
                     }
-                })
+                });
+            }
+            else if (employeeToChange.role === "other") {                
+                roomArray.forEach(room => {
+                    if (room.name === currentRoomName) {
+                        if (room.capacity > 0) {
+                            room.capacity--;
+                            localStorage.setItem("rooms", JSON.stringify(roomArray));
+
+                            employeeToChange.location = currentRoomName;
+                            localStorage.setItem("employee", JSON.stringify(employeesList));
+                        }
+                    }
+                });
             }
             else if (employeeToChange.role === "cleaning") {
                 roomArray.forEach(room =>{
@@ -379,22 +399,7 @@ document.querySelector('.save_changes').addEventListener("click", ()=>{
                         return;
                     }
                 })
-            }
-            else if (employeeToChange.role === "other") {
-                roomArray.forEach(room =>{
-                    if (room.name === currentRoomName) {
-                        if (room.name === currentRoomName && room.capacity > 0) {
-                            room.capacity --;
-                            localStorage.setItem("rooms", JSON.stringify(roomArray))   
-                            employeeToChange.location = currentRoomName
-                            localStorage.setItem("employee", JSON.stringify(employeesList));
-                        }else if(room.capacity === 0){
-                            return;
-                        }
-                    }
-                })
-            }
-            
+            }            
         }else{
             let nameOfEmployee = employeeCheckBox.getAttribute("name")
 
@@ -404,7 +409,14 @@ document.querySelector('.save_changes').addEventListener("click", ()=>{
             localStorage.setItem("employee", JSON.stringify(employeesList));
         }
     })
+    renderRooms();
     displayUnassignedEmployees();
+    displayEmployeesInZone("Conference Room", ".room-0");
+    displayEmployeesInZone("Reception", ".room-1");
+    displayEmployeesInZone("Server Room", ".room-2");
+    displayEmployeesInZone("Security Room", ".room-3");
+    displayEmployeesInZone("Staff Room", ".room-4");
+    displayEmployeesInZone("Spare Room", ".room-5");
 })
 
 function displayUnassignedEmployees() {
@@ -572,6 +584,14 @@ function getTheEmployeeBackToTheUnassignedSection(name, currentRoomName) {
 
     searchedForEmployee.location = null
     localStorage.setItem("employee", JSON.stringify(employeeList));
+    renderRooms();
+    displayUnassignedEmployees();
+    displayEmployeesInZone("Conference Room", ".room-0");
+    displayEmployeesInZone("Reception", ".room-1");
+    displayEmployeesInZone("Server Room", ".room-2");
+    displayEmployeesInZone("Security Room", ".room-3");
+    displayEmployeesInZone("Staff Room", ".room-4");
+    displayEmployeesInZone("Spare Room", ".room-5");
 }
 
 function getEmployeesAddedToLocalStorage(employeeInformation) {
