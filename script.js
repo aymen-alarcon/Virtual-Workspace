@@ -215,21 +215,100 @@ document.querySelector('.save_changes').addEventListener("click", ()=>{
             let nameOfEmployee = employeeCheckBox.getAttribute("name")
 
             roomArray = JSON.parse(localStorage.getItem("rooms"))
-
-            roomArray.forEach(room =>{
-                if (room.name === currentRoomName) {
-                    if (room.name === currentRoomName && room.capacity > 980) {
-                        room.capacity --;
-                        localStorage.setItem("rooms", JSON.stringify(roomArray))   
-                        let employeesList = getEmployeesAddedToLocalStorage("employee") || []
-                        let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
-                        employeeToChange.location = currentRoomName
-                        localStorage.setItem("employee", JSON.stringify(employeesList));
-                    }else if(room.capacity === 0){
+            let employeesList = getEmployeesAddedToLocalStorage("employee") || []
+            let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
+            if (employeeToChange.role === "receptionist") {                
+                roomArray.forEach(room =>{
+                    if (currentRoomName === "Reception") {
+                        if (currentRoomName === "Reception" && room.capacity > 0) {
+                            room.capacity --;
+                            localStorage.setItem("rooms", JSON.stringify(roomArray))   
+                            employeeToChange.location = "Reception"
+                            localStorage.setItem("employee", JSON.stringify(employeesList));
+                        }else if(room.capacity === 0){
+                            return;
+                        }
+                    }else{
                         return;
                     }
-                }
-            })
+                })
+            }else if (employeeToChange.role === "it") {
+                roomArray.forEach(room =>{
+                    if (currentRoomName === "Server Room") {
+                        if (currentRoomName === "Server Room" && room.capacity > 0) {
+                            room.capacity --;
+                            localStorage.setItem("rooms", JSON.stringify(roomArray))   
+                            employeeToChange.location = "Server Room"
+                            localStorage.setItem("employee", JSON.stringify(employeesList));
+                        }else if(room.capacity === 0){
+                            return;
+                        }
+                    }else{
+                        return;
+                    }
+                })
+            }
+            else if (employeeToChange.role === "security") {
+                roomArray.forEach(room =>{
+                    if (currentRoomName === "Security Room") {
+                        if (currentRoomName === "Security Room" && room.capacity > 0) {
+                            room.capacity --;
+                            localStorage.setItem("rooms", JSON.stringify(roomArray))   
+                            employeeToChange.location = "Security Room"
+                            localStorage.setItem("employee", JSON.stringify(employeesList));
+                        }else if(room.capacity === 0){
+                            return;
+                        }
+                    }else{
+                        return;
+                    }
+                })
+            }
+            else if (employeeToChange.role === "manager") {
+                roomArray.forEach(room =>{
+                    if (room.name === currentRoomName) {
+                        if (room.name === currentRoomName && room.capacity > 0) {
+                            room.capacity --;
+                            localStorage.setItem("rooms", JSON.stringify(roomArray))   
+                            employeeToChange.location = currentRoomName
+                            localStorage.setItem("employee", JSON.stringify(employeesList));
+                        }else if(room.capacity === 0){
+                            return;
+                        }
+                    }
+                })
+            }
+            else if (employeeToChange.role === "cleaning") {
+                roomArray.forEach(room =>{
+                    if (currentRoomName === "Staff Room") {
+                        if (currentRoomName === "Staff Room" && room.capacity > 0) {
+                            room.capacity --;
+                            localStorage.setItem("rooms", JSON.stringify(roomArray))   
+                            employeeToChange.location = "Staff Room"
+                            localStorage.setItem("employee", JSON.stringify(employeesList));
+                        }else if(room.capacity === 0){
+                            return;
+                        }
+                    }else{
+                        return;
+                    }
+                })
+            }
+            else if (employeeToChange.role === "other") {
+                roomArray.forEach(room =>{
+                    if (room.name === currentRoomName) {
+                        if (room.name === currentRoomName && room.capacity > 0) {
+                            room.capacity --;
+                            localStorage.setItem("rooms", JSON.stringify(roomArray))   
+                            employeeToChange.location = currentRoomName
+                            localStorage.setItem("employee", JSON.stringify(employeesList));
+                        }else if(room.capacity === 0){
+                            return;
+                        }
+                    }
+                })
+            }
+            
         }else{
             let nameOfEmployee = employeeCheckBox.getAttribute("name")
 
