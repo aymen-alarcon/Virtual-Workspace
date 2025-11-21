@@ -42,6 +42,7 @@ let roomList =[
         "picture": "assets/img/room-5.png"
     }
 ]
+
 LoadRoomsArrayToLocalStorage(roomList)
 
 let NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ' -]{2,50}$/;
@@ -174,13 +175,13 @@ function renderRooms() {
     });
 }
 
-document.querySelector(".bi-search").addEventListener("click", ()=>{
-    let searchBar = document.querySelector(".searchBar").value
+document.querySelector(".searchBar").addEventListener("input", ()=>{
+    let searchBar = document.querySelector(".searchBar").value.toLowerCase().trim()
     let employeesList = getEmployeesAddedToLocalStorage("employee")
     let UnassignedEmployeesList = employeesList.filter(employeeTemp => employeeTemp.location === null)
     document.querySelector(".unassigned-employees").innerHTML = "";
     UnassignedEmployeesList.forEach(UnassignedEmployee =>{
-        if (UnassignedEmployee.name.includes(searchBar)) {
+        if (UnassignedEmployee.name.toLowerCase().trim().includes(searchBar)) {
             document.querySelector(".unassigned-employees").innerHTML += `
             <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
                 <div class="d-flex align-items-center gap-3">
@@ -310,18 +311,7 @@ function CheckAssignedEmployees(roomName){
         UnassignedEmployeesList.forEach(employee => {
             document.querySelector(".edit_assigned_staff").innerHTML += displayUnassignedEmployeesList(employee, roomName);
         })
-        assignedEmployeesList.forEach(employee => {
-            document.querySelector(".edit_assigned_staff").innerHTML += displayEmployeesInModal(employee, roomName);
-        });
     }
-}
-
-function displayEmployeesInModal(assignedEmployee) {
-    return`    
-        <div class="d-flex gap-5 g-5 assignedEmployeesCheckbox">
-            <input type="checkbox" class="checkbox" name="${assignedEmployee.name}" room="${currentRoomName}" checked>${assignedEmployee.name}
-        </div>
-    `
 }
 
 function displayUnassignedEmployeesList(assignedEmployee) {
@@ -349,6 +339,7 @@ document.querySelector('.save_changes').addEventListener("click", ()=>{
                     if (room.name === "Reception") {
                         if (room.capacity > 0) {
                             room.capacity--;
+
                             localStorage.setItem("rooms", JSON.stringify(roomArray));
 
                             employeeToChange.location = "Reception";
