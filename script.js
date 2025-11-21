@@ -173,6 +173,31 @@ function renderRooms() {
         row.innerHTML += displayRoom(room);
     });
 }
+
+document.querySelector(".bi-search").addEventListener("click", ()=>{
+    let searchBar = document.querySelector(".searchBar").value
+    let employeesList = getEmployeesAddedToLocalStorage("employee")
+    let UnassignedEmployeesList = employeesList.filter(employeeTemp => employeeTemp.location === null)
+    document.querySelector(".unassigned-employees").innerHTML = "";
+    UnassignedEmployeesList.forEach(UnassignedEmployee =>{
+        if (UnassignedEmployee.name.includes(searchBar)) {
+            document.querySelector(".unassigned-employees").innerHTML += `
+            <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle employee-photo" data-bs-toggle="modal" data-bs-target="#employeeModal" data-employee-name="${UnassignedEmployee.name}" style="background-image:url('${UnassignedEmployee.photo}');"></div>
+                    <div>
+                        <p class="mb-0 employeeName" data-employee-name="${UnassignedEmployee.name}">${UnassignedEmployee.name}</p>
+                        <small class="text-muted-light">${UnassignedEmployee.role}</small>
+                    </div>
+                </div>
+            </div>   
+            `
+        }else if(searchBar === ""){
+            displayUnassignedEmployees()
+        }
+    })
+})
+
 renderRooms();
 
 document.addEventListener('DOMContentLoaded', ()=> {    
