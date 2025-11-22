@@ -100,6 +100,49 @@ function validateUrlField(el) {
     clearFieldValidity(el);
     return true;
 }
+document.getElementById("SortingSelect").addEventListener("change", ()=>{
+    if (Number(document.getElementById("SortingSelect").value) === 0) {        
+        displayUnassignedEmployees()
+    } else if(Number(document.getElementById("SortingSelect").value) === 1){
+        let employeeList = getEmployeesAddedToLocalStorage("employee");
+        document.querySelector(".unassigned-employees").innerHTML = ""
+    
+        let sortedEmployees =  employeeList.sort((a,b) => a.name.localeCompare(b.name))
+        sortedEmployees.forEach(sortedEmployee =>{
+            document.querySelector(".unassigned-employees").innerHTML += `
+                    <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle employee-photo" data-bs-toggle="modal" data-bs-target="#employeeModal" data-employee-name="${sortedEmployee.name}" style="background-image:url('${sortedEmployee.photo}');"></div>
+                            <div>
+                                <p class="mb-0 employeeName" data-employee-name="${sortedEmployee.name}">${sortedEmployee.name}</p>
+                                <small class="text-muted-light">${sortedEmployee.role}</small>
+                            </div>
+                        </div>
+                    </div>   
+                    `
+        })
+    }else if(Number(document.getElementById("SortingSelect").value) === 2){
+        document.getElementById("SortingSelect").addEventListener("click",()=>{
+            let employeeList = getEmployeesAddedToLocalStorage("employee");
+            document.querySelector(".unassigned-employees").innerHTML = ""
+        
+            let sortedEmployees =  employeeList.sort((a,b) => a.role.localeCompare(b.role))
+            sortedEmployees.forEach(sortedEmployee =>{
+                document.querySelector(".unassigned-employees").innerHTML += `
+                                <div class="d-flex align-items-center justify-content-between bg-light-custom p-2 rounded shadow-soft mb-2">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="rounded-circle employee-photo" data-bs-toggle="modal" data-bs-target="#employeeModal" data-employee-name="${sortedEmployee.name}" style="background-image:url('${sortedEmployee.photo}');"></div>
+                                        <div>
+                                            <p class="mb-0 employeeName" data-employee-name="${sortedEmployee.name}">${sortedEmployee.name}</p>
+                                            <small class="text-muted-light">${sortedEmployee.role}</small>
+                                        </div>
+                                    </div>
+                                </div>   
+                                `
+            })
+        })
+    }    
+})
 
 function validateExperiences(form) {
     let valid = true;
@@ -546,7 +589,7 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
     form.reset();
 })
 
-let editForm = document.getElementById('editWorkerForm');
+let editForm = document.forms["editWorkerForm"];
 if (editForm) {
     editForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -639,8 +682,8 @@ function saveToLocalStorage(keyName, dataList) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    let addForm = document.getElementById('addWorkerForm');
-    let editForm = document.getElementById('editWorkerForm');
+    let addForm = document.forms["addWorkerForm"];
+    let editForm = document.forms["editWorkerForm"];
     let attachClearListeners = (form) => {
         if (!form) return;
         form.querySelectorAll('input, select, textarea').forEach(el => {

@@ -36,7 +36,6 @@
 
         <div class="modal-body">
           <form id="editWorkerForm">
-
             <label for="editWorkerName" class="form-label">Full Name</label>
             <input type="text" class="form-control" id="editWorkerName" placeholder="Enter full name">
 
@@ -181,8 +180,13 @@
         </div>
       </div>
 
-      <div class="mb-3">
-        <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#addWorkerModal">+ Add New Staff</button>
+      <div class="mb-3 d-flex align-items-center justify-content-between gap-3">
+        <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#addWorkerModal">Add Staff</button>
+        <select name="SortingSelect" id="SortingSelect" class="form-control">
+          <option value="0" selected disabled>Sort By</option>
+          <option value="1">Name</option>
+          <option value="2">Role</option>
+        </select>
       </div>
 
       <div class="unassigned-employees flex-column overflow-auto">
