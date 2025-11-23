@@ -20,6 +20,73 @@
     cursor: pointer;
 }
 
+.assignedEmployeesCheckbox {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    background: #ffffff;
+    padding: 12px 16px;
+    border-radius: 16px;
+    border: 2px solid #e5e7eb;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.employee-checkbox {
+    display: none;
+}
+
+.employee-photo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e5e7eb;
+}
+
+.employee-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.employee-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.employee-role {
+    font-size: 0.85rem;
+    color: #6b7280;
+    text-transform: capitalize;
+}
+
+.employee-email {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+.employee-checkbox:checked + .employee-photo,
+.employee-checkbox:checked ~ .employee-info {
+    filter: brightness(1.1);
+}
+
+.employee-checkbox:checked ~ .employee-info .employee-name {
+    color: #4338ca;
+}
+
+.employee-checkbox:checked + .employee-photo {
+    border-color: #4338ca;
+}
+
+.assignedEmployeesCheckbox:has(.employee-checkbox:checked) {
+    background: #eef2ff;
+    border-color: #4338ca;
+    box-shadow: 0 2px 10px rgba(67, 56, 202, 0.25);
+}
+
 @media screen and (max-width: 767px) {
     .d-flex.vh-100{
         flex-direction: column;

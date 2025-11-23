@@ -100,6 +100,7 @@ function validateUrlField(el) {
     clearFieldValidity(el);
     return true;
 }
+
 document.getElementById("SortingSelect").addEventListener("change", ()=>{
     if (Number(document.getElementById("SortingSelect").value) === 0) {        
         displayUnassignedEmployees()
@@ -183,6 +184,15 @@ function LoadRoomsArrayToLocalStorage(roomList) {
     }
 }
 
+function renderRooms() {
+    let roomsFromStorage = getEmployeesAddedToLocalStorage("rooms") || roomList;
+    let row = document.querySelector('.row');
+    row.innerHTML = '';
+    roomsFromStorage.forEach(room => {
+        row.innerHTML += displayRoom(room);
+    });
+}
+
 function displayRoom(room) {
     let backgroundGroundStyle = `background-image: url('${room.picture}'); background-size: cover;`;
 
@@ -206,16 +216,6 @@ function displayRoom(room) {
             </div>
         </div>
     `
-}
-
-function renderRooms() {
-    let roomsFromStorage = getEmployeesAddedToLocalStorage("rooms") || roomList;
-    let row = document.querySelector('.row');
-    if (!row) return;
-    row.innerHTML = '';
-    roomsFromStorage.forEach(room => {
-        row.innerHTML += displayRoom(room);
-    });
 }
 
 document.querySelector(".searchBar").addEventListener("input", ()=>{
@@ -284,12 +284,12 @@ function loadToProfileModal(name) {
     let locationHTML = "";
     if(chosenEmployee.location == null){
         locationHTML = `
-                <small class="text-success">Unassigned</small>
+            <small class="text-success">Unassigned</small>
         `;
     }else{
         locationHTML = `
-                <p class="mb-0 fw-semibold">${chosenEmployee.location}</p>
-                <small class="text-success">Assigned</small>
+            <p class="mb-0 fw-semibold">${chosenEmployee.location}</p>
+            <small class="text-success">Assigned</small>
         `;
     }
 
@@ -334,6 +334,7 @@ let currentRoomName = null;
 document.addEventListener("click", (event) => {
     if (event.target.classList.contains("addAssignee")) {
         CheckAssignedEmployees(event.target.getAttribute("roomName"));
+        SubmitEmployeeToRoom(event.target.getAttribute("roomName"))
     }
 });
 
@@ -357,96 +358,84 @@ function CheckAssignedEmployees(roomName){
     }
 }
 
-function displayUnassignedEmployeesList(assignedEmployee) {
-    return`    
-        <div class="d-flex gap-5 g-5 assignedEmployeesCheckbox">
-            <input type="checkbox" class="checkbox" name="${assignedEmployee.name}" room="${currentRoomName}">${assignedEmployee.name}
-        </div>
-    `
-}
-
 document.getElementById("workerPhoto").addEventListener("change", () =>{
     document.querySelector(".preVisualization").src = document.getElementById("workerPhoto").value.split("\\").pop()
 })
 
-document.querySelector('.save_changes').addEventListener("click", ()=>{
-    document.querySelectorAll(".checkbox").forEach(employeeCheckBox =>{
-        if (employeeCheckBox.checked === true) {
-            let nameOfEmployee = employeeCheckBox.getAttribute("name")
+function displayUnassignedEmployeesList(assignedEmployee) {
+    return`    
+        <label class="employee-card assignedEmployeesCheckbox">
+            <input type="checkbox" class="employee-checkbox" name="${assignedEmployee.name}" room="${currentRoomName}">
+            <img src="${assignedEmployee.photo}" alt="pfp" class="employee-photo">
+            <div class="employee-info">
+                <div class="employee-name">${assignedEmployee.name}</div>
+                <div class="employee-role">${assignedEmployee.role}</div>
+                <div class="employee-email">${assignedEmployee.email}</div>
+            </div>
+        </label>
+    `
+}
 
-            roomArray = JSON.parse(localStorage.getItem("rooms"))
-            let employeesList = getEmployeesAddedToLocalStorage("employee") || []
-            let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
-            if (employeeToChange.role === "receptionist") {                
+
+function SubmitEmployeeToRoom(roomName) {
+    document.querySelector('.save_changes').addEventListener("click", ()=>{
+        document.querySelectorAll(".employee-checkbox").forEach(employeeCheckBox =>{
+            if (employeeCheckBox.checked === true) {
+                let nameOfEmployee = employeeCheckBox.getAttribute("name")
+    
+                roomArray = JSON.parse(localStorage.getItem("rooms"))
+                let employeesList = getEmployeesAddedToLocalStorage("employee") || []
+                let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
+                              
                 roomArray.forEach(room => {
-                    if (room.name === "Reception") {
+                    if (room.name === "Reception" && employeeToChange.role === "receptionist" && roomName === "Reception") {
                         if (room.capacity > 0) {
                             room.capacity--;
-
+    
                             localStorage.setItem("rooms", JSON.stringify(roomArray));
-
+    
                             employeeToChange.location = "Reception";
                             localStorage.setItem("employee", JSON.stringify(employeesList));
                         }
                     }
-                });
-            }
-            else if (employeeToChange.role === "it") {                
-                roomArray.forEach(room => {
-                    if (room.name === "Server Room") {
+                    else if (room.name === "Server Room" && employeeToChange.role === "it" && roomName === "Server Room") {
                         if (room.capacity > 0) {
                             room.capacity--;
                             localStorage.setItem("rooms", JSON.stringify(roomArray));
-
+    
                             employeeToChange.location = "Server Room";
                             localStorage.setItem("employee", JSON.stringify(employeesList));
                         }
                     }
-                });
-            }
-            else if (employeeToChange.role === "security") {                
-                roomArray.forEach(room => {
-                    if (room.name === "Security Room") {
+                    else if (room.name === "Security Room" && employeeToChange.role === "security" && roomName === "Security Room") {
                         if (room.capacity > 0) {
                             room.capacity--;
                             localStorage.setItem("rooms", JSON.stringify(roomArray));
-
+    
                             employeeToChange.location = "Security Room";
                             localStorage.setItem("employee", JSON.stringify(employeesList));
                         }
                     }
-                });
-            }
-            else if (employeeToChange.role === "manager") {                
-                roomArray.forEach(room => {
-                    if (room.name === currentRoomName) {
+                    else if (room.name === roomName && employeeToChange.role === "manager" && roomName === roomName) {
                         if (room.capacity > 0) {
                             room.capacity--;
                             localStorage.setItem("rooms", JSON.stringify(roomArray));
-
-                            employeeToChange.location = currentRoomName;
+    
+                            employeeToChange.location = roomName;
                             localStorage.setItem("employee", JSON.stringify(employeesList));
                         }
                     }
-                });
-            }
-            else if (employeeToChange.role === "other") {                
-                roomArray.forEach(room => {
-                    if (room.name === currentRoomName) {
+                    else if (room.name === roomName && employeeToChange.role === "other" && roomName === roomName) {
                         if (room.capacity > 0) {
                             room.capacity--;
                             localStorage.setItem("rooms", JSON.stringify(roomArray));
-
-                            employeeToChange.location = currentRoomName;
+    
+                            employeeToChange.location = roomName;
                             localStorage.setItem("employee", JSON.stringify(employeesList));
                         }
                     }
-                });
-            }
-            else if (employeeToChange.role === "cleaning") {
-                roomArray.forEach(room =>{
-                    if (currentRoomName === "Staff Room") {
-                        if (currentRoomName === "Staff Room" && room.capacity > 0) {
+                    else if (roomName === "Staff Room" && employeeToChange.role === "cleaning" && roomName === "Staff Room") {
+                        if (roomName === "Staff Room" && room.capacity > 0) {
                             room.capacity --;
                             localStorage.setItem("rooms", JSON.stringify(roomArray))   
                             employeeToChange.location = "Staff Room"
@@ -457,26 +446,26 @@ document.querySelector('.save_changes').addEventListener("click", ()=>{
                     }else{
                         return;
                     }
-                })
-            }            
-        }else{
-            let nameOfEmployee = employeeCheckBox.getAttribute("name")
-
-            let employeesList = getEmployeesAddedToLocalStorage("employee")
-            let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
-            employeeToChange.location = null
-            localStorage.setItem("employee", JSON.stringify(employeesList));
-        }
+                })        
+            }else{
+                let nameOfEmployee = employeeCheckBox.getAttribute("name")
+    
+                let employeesList = getEmployeesAddedToLocalStorage("employee")
+                let employeeToChange = employeesList.find(employeeTemp => employeeTemp.name === nameOfEmployee)
+                employeeToChange.location = null
+                localStorage.setItem("employee", JSON.stringify(employeesList));
+            }
+        })
+        renderRooms();
+        displayUnassignedEmployees();
+        displayEmployeesInZone("Conference Room", ".room-0");
+        displayEmployeesInZone("Reception", ".room-1");
+        displayEmployeesInZone("Server Room", ".room-2");
+        displayEmployeesInZone("Security Room", ".room-3");
+        displayEmployeesInZone("Staff Room", ".room-4");
+        displayEmployeesInZone("Spare Room", ".room-5");
     })
-    renderRooms();
-    displayUnassignedEmployees();
-    displayEmployeesInZone("Conference Room", ".room-0");
-    displayEmployeesInZone("Reception", ".room-1");
-    displayEmployeesInZone("Server Room", ".room-2");
-    displayEmployeesInZone("Security Room", ".room-3");
-    displayEmployeesInZone("Staff Room", ".room-4");
-    displayEmployeesInZone("Spare Room", ".room-5");
-})
+}
 
 function displayUnassignedEmployees() {
     let employees = getEmployeesAddedToLocalStorage("employee") || [];
@@ -538,11 +527,13 @@ function displayEmployeesInZone(zoneKey, containerSelector) {
 
 document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
     event.preventDefault();
+
     let form = event.target;
-    let nameEl = document.getElementById('workerName');
-    let roleEl = document.getElementById('workerRole');
-    let emailEl = document.getElementById('workerEmail');
-    let phoneEl = document.getElementById('workerPhone');
+
+    let nameEl = form.workerName;
+    let roleEl = form.workerRole;
+    let emailEl = form.workerEmail;
+    let phoneEl = form.workerPhone;
 
     let valid = true;
     if (!validateNameField(nameEl)) valid = false;
@@ -588,38 +579,6 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
     displayUnassignedEmployees();
     form.reset();
 })
-
-let editForm = document.forms["editWorkerForm"];
-if (editForm) {
-    editForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        let nameEl = document.getElementById('editWorkerName');
-        let roleEl = document.getElementById('editWorkerRole');
-        let emailEl = document.getElementById('editWorkerEmail');
-        let phoneEl = document.getElementById('editWorkerPhone');
-        let photoEl = document.getElementById('editWorkerPhoto');
-
-        let valid = true;
-        if (!validateNameField(nameEl)) valid = false;
-        if (!roleEl.value) {
-            setFieldValidity(roleEl, 'Please select a role.');
-            valid = false;
-        } else {
-            clearFieldValidity(roleEl);
-        }
-        if (!validateEmailField(emailEl)) valid = false;
-        if (!validatePhoneField(phoneEl)) valid = false;
-        if (!validateUrlField(photoEl)) valid = false;
-
-        if (!valid) return;
-
-        let modalEl = document.getElementById('editWorkerModal');
-        if (modalEl) {
-            let bsModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-            bsModal.hide();
-        }
-    });
-}
 
 document.addEventListener("click", (event)=>{
     if (event.target.classList.contains("bi-x-circle")) {        
