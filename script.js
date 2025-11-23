@@ -376,7 +376,6 @@ function displayUnassignedEmployeesList(assignedEmployee) {
     `
 }
 
-
 function SubmitEmployeeToRoom(roomName) {
     document.querySelector('.save_changes').addEventListener("click", ()=>{
         document.querySelectorAll(".employee-checkbox").forEach(employeeCheckBox =>{
@@ -554,7 +553,7 @@ document.forms["addWorkerForm"].addEventListener("submit", (event)=>{
         role : roleEl.value,
         email : emailEl.value.trim(),
         phone : phoneEl.value.trim(),
-        photo : "assets/img/profile.png",
+        photo : form.workerPhoto.value ? form.workerPhoto.value.split("\\").pop() : "assets/img/profile.png",
         location : null,
         experiences : []
     }   
