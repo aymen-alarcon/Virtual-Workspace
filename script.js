@@ -295,7 +295,7 @@ function loadToProfileModal(name) {
 
     document.querySelector(".employeeProfile").innerHTML = `
         <div class="text-center mb-4">
-            <div class="profile-photo mx-auto rounded-circle" style="background-image:url('assets/img/profile.png');"></div>
+            <div class="profile-photo mx-auto rounded-circle" style="background-image:url('${chosenEmployee.photo}');"></div>
             <h4 class="fw-bold mt-3 mb-1">${chosenEmployee.name}</h4>
             <span class="badge bg-success px-3 py-2">Software Engineer</span>
           </div>
